@@ -1,6 +1,6 @@
 ﻿namespace RestaurantReviewCoreMVC.Models
 {
-    public class AccountModel
+    public class Account
     {
         private int accountID;
         private string name;
