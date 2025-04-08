@@ -9,12 +9,60 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             return View();
         }
+        public IActionResult Review(int? reviewID)
+        {
+            if (reviewID.HasValue) // if redirected with reviewID update
+            {
+                RestaurantDB restaurantDB = new RestaurantDB();
+                Review review = restaurantDB.GetReview(reviewID);
+                return View("Review", review);
+            }
+            return View("Review", new Review()); // no reviewID insert
+        }
         [HttpPost]
-        public IActionResult AddReview(Review review)
+        public IActionResult Review(Review review)
         {
             RestaurantDB restaurantDB = new RestaurantDB();
-            restaurantDB.InsertReview(review);
-            return View("InsertReview");
+
+            if (review.ReviewID == null)
+            {
+                //restaurantDB.InsertReview(review);
+            }
+            else
+            {
+                //restaurantDB.UpdateReview(review);
+            }
+
+            return View("Review", review);
+        }
+
+        public IActionResult Reservation(int? reservationID)
+        {
+            if (reservationID.HasValue) // if redirected with reservationID update
+            {
+                RestaurantDB restaurantDB = new RestaurantDB();
+                Reservation reservation = restaurantDB.GetReservation(reservationID);
+                return View("Reservation", reservation);
+            }
+
+            return View("Reservation", new Reservation()); // no reservationID insert
+        }
+
+        [HttpPost]
+        public IActionResult Reservation(Reservation reservation)
+        {
+            RestaurantDB restaurantDB = new RestaurantDB();
+
+            if (reservation.ReservationID == null) 
+            { 
+                //restaurantDB.InsertReservation(reservation);
+            }
+            else
+            {
+                //restaurantDB.UpdateReview(review);
+            }
+
+            return View("Reservation", reservation);
         }
     }
 }

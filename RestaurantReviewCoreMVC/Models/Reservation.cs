@@ -2,7 +2,7 @@
 {
     public class Reservation
     {
-        private int reservationID;
+        private int? reservationID;
         private int restaurantID;
 
         private string name;
@@ -14,7 +14,7 @@
         private string comment;
         private string status;
 
-        public int ReservationID
+        public int? ReservationID
         {
             get { return reservationID; }
             set { reservationID = value; }

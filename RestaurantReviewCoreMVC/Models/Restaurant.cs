@@ -90,16 +90,5 @@ namespace RestaurantReviewCoreMVC.Models
             get { return website; }
             set { website = value; }
         }
-        public string Logo
-        {
-            get { return logo; }
-            set { logo = value; }
-        }
-        public string Profile
-        {
-            get { return profile; }
-            set { profile = value; }
-        }
-
     }
 }

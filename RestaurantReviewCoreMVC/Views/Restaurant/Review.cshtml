@@ -1,0 +1,53 @@
+﻿@{
+}
+@model RestaurantReviewCoreMVC.Models.Review
+
+<form method="post">
+    <div>
+        <label>Name</label><br />
+        <input asp-for="Name" type="text"/>
+    </div>
+    <div>
+        <label>Comment</label><br />
+        <input asp-for="Comment" type="text" />
+    </div>
+    <div>
+        <label>Quality</label><br />
+        @for (int i = 1; i < 6; i++)
+        {
+            <label><input asp-for="Quality" value="@i" type="radio" />@i</label>
+        }
+    </div>
+    <div>
+        <label>Service</label><br />
+        @for (int i = 1; i < 6; i++)
+        {
+            <label><input asp-for="Service" value="@i" type="radio" />@i</label>
+        }
+    </div>
+    <div>
+        <label>Atmosphere</label><br />
+        @for (int i = 1; i < 6; i++)
+        {
+            <label><input asp-for="Atmosphere" value="@i" type="radio" />@i</label>
+        }
+    </div>
+    <div>
+        <label>Price</label><br />
+        @for (int i = 1; i < 6; i++)
+        {
+            <label><input asp-for="Price" value="@i" type="radio" />@i</label>
+        }
+    </div>
+    <div>
+        <label>Visit Time</label>
+        <input asp-for="VisitTime" type="datetime-local" />
+    </div>
+    <button type="submit">Submit</button>
+    @if (Model.ReviewID != null) 
+    {
+        <div>
+            Name = @(Model.Name) | Quality = @(Model.Quality) | Visit Time = @(Model.VisitTime)
+        </div>
+    }
+</form>

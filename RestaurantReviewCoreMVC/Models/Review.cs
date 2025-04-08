@@ -2,7 +2,7 @@
 {
     public class Review
     {
-        private int reviewID;
+        private int? reviewID;
         private int accountID;
         private int restaurantID;
         private string name;
@@ -13,7 +13,7 @@
         private int price;
         private DateTime visitTime;
 
-        public int ReviewID
+        public int? ReviewID
         {
             get { return reviewID; }
             set { reviewID = value; }
