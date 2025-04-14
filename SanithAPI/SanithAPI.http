@@ -1,0 +1,6 @@
+@SanithAPI_HostAddress = http://localhost:5141
+
+GET {{SanithAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
