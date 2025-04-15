@@ -1,10 +1,9 @@
 ﻿using System.Data;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 
-
-namespace RestaurantReviewCoreMVC.Models
+namespace SanithAPI.Models
 {
-    public class DBConnect
+    internal class DBConnect
     {
         // Main Connection String - used for the published web application and project submissions.
         String SqlConnectString = "server=cis-mssql1.temple.edu;Database=sp25_3342_tui96569;User id=tui96569;Password=eeJ9aef3faez";

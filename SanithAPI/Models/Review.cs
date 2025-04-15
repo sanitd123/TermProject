@@ -1,4 +1,4 @@
-﻿namespace RestaurantReviewCoreMVC.Models
+﻿namespace SanithAPI.Models
 {
     public class Review
     {

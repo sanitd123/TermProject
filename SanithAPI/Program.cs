@@ -20,8 +20,7 @@ builder.Services.AddCors(options =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+               .AllowAnyHeader();
     });
 });
 
@@ -45,6 +44,7 @@ app.UseSession();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
