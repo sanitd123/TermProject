@@ -9,9 +9,10 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             return View();
         }
-        public IActionResult Review(int? reviewID)
+        [HttpGet]
+        public IActionResult Review(int reviewID)
         {
-            if (reviewID.HasValue) // if redirected with reviewID update
+            if (reviewID == -1) // if redirected with reviewID update
             {
                 RestaurantDB restaurantDB = new RestaurantDB();
                 Review review = restaurantDB.GetReview(reviewID);

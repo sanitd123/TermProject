@@ -2,19 +2,19 @@
 {
     public class Reservation
     {
-        private int? reservationID;
-        private int restaurantID;
+        private int reservationID = -1;
+        private int restaurantID = -1;
 
-        private string name;
-        private string phone;
-        private string email;
+        private string name = "";
+        private string phone = "";
+        private string email = "";
 
-        private DateTime reservationTime;
-        private int partySize;
-        private string comment;
-        private string status;
+        private DateTime reservationTime = default;
+        private int partySize = = -1;
+        private string comment = "";
+        private string status = "";
 
-        public int? ReservationID
+        public int ReservationID
         {
             get { return reservationID; }
             set { reservationID = value; }

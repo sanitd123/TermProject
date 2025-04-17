@@ -2,18 +2,18 @@
 {
     public class Review
     {
-        private int? reviewID;
-        private int accountID;
-        private int restaurantID;
-        private string name;
-        private string comment;
-        private int quality;
-        private int service;
-        private int atmosphere;
-        private int price;
-        private DateTime visitTime;
+        private int reviewID = -1;
+        private int accountID = -1;
+        private int restaurantID = -1;
+        private string name = "";
+        private string comment = "";
+        private int quality = -1;
+        private int service = -1;
+        private int atmosphere = -1;
+        private int price = -1;
+        private DateTime visitTime = default;
 
-        public int? ReviewID
+        public int ReviewID
         {
             get { return reviewID; }
             set { reviewID = value; }
