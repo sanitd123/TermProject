@@ -18,6 +18,12 @@ namespace RestaurantReviewCoreMVC.Controllers
             return View();
         }
 
+        public IActionResult TestReservation()
+        {
+            RestaurantDB restaurantDB = new RestaurantDB();
+            Reservation reservation = restaurantDB.GetReservation(1);
+            return RedirectToAction("Test", "Restaurant");
+        }
         public IActionResult Privacy()
         {
             return View();

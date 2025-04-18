@@ -1,4 +1,6 @@
-﻿namespace RestaurantReviewCoreMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RestaurantReviewCoreMVC.Models
 {
     public class Review
     {
@@ -28,31 +30,37 @@
             get { return restaurantID; }
             set { restaurantID = value; }
         }
+        [Required(ErrorMessage = "Name required")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+        [Required(ErrorMessage = "Comment required")]
         public string Comment
         {
             get { return comment; }
             set { comment = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a quality rating")]
         public int Quality
         {
             get { return quality; }
             set { quality = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a service rating")]
         public int Service
         {
             get { return service; }
             set { service = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick an atmosphere rating")]
         public int Atmosphere
         {
             get { return atmosphere; }
             set { atmosphere = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a price rating")]
         public int Price
         {
             get { return price; }

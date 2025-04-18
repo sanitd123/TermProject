@@ -1,4 +1,6 @@
-﻿namespace RestaurantReviewCoreMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RestaurantReviewCoreMVC.Models
 {
     public class Reservation
     {
@@ -10,7 +12,7 @@
         private string email = "";
 
         private DateTime reservationTime = default;
-        private int partySize = = -1;
+        private int partySize = -1;
         private string comment = "";
         private string status = "";
 
@@ -24,16 +26,19 @@
             get { return restaurantID; }
             set { restaurantID = value; }
         }
+        [Required(ErrorMessage = "Name required")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+        [Required(ErrorMessage = "Phone number required")]
         public string Phone
         {
             get { return phone; }
             set { phone = value; }
         }
+        [Required(ErrorMessage = "Email required")]
         public string Email
         {
             get { return email; }
@@ -44,11 +49,13 @@
             get { return reservationTime; }
             set { reservationTime = value; }
         }
+        
         public int PartySize
         {
             get { return partySize; }
             set { partySize = value; }
         }
+        [Required(ErrorMessage = "Comment required")]
         public string Comment
         {
             get { return comment; }

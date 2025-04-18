@@ -6,10 +6,12 @@
     <div>
         <label>Name</label><br />
         <input asp-for="Name" value="@Model.Name" type="text" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div>
         <label>Comment</label><br />
         <input asp-for="Comment" value="@Model.Comment" type="text" />
+        <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
     <div>
         <label>Quality</label><br />
@@ -24,6 +26,7 @@
                 <label><input asp-for="Quality" value="@i" type="radio" />@i</label>
             }
         }
+        <span asp-validation-for="Quality" class="text-danger"></span>
     </div>
     <div>
         <label>Service</label><br />
@@ -38,6 +41,7 @@
                 <label><input asp-for="Service" value="@i" type="radio" />@i</label>
             }
         }
+        <span asp-validation-for="Service" class="text-danger"></span>
     </div>
     <div>
         <label>Atmosphere</label><br />
@@ -52,6 +56,7 @@
                 <label><input asp-for="Atmosphere" value="@i" type="radio" />@i</label>
             }
         }
+        <span asp-validation-for="Atmosphere" class="text-danger"></span>
     </div>
     <div>
         <label>Price</label><br />
@@ -66,16 +71,12 @@
                 <label><input asp-for="Price" value="@i" type="radio" />@i</label>        
             }
         }
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
     <div>
         <label>Visit Time</label>
         <input asp-for="VisitTime" type="datetime-local" />
+        <span asp-validation-for="VisitTime" class="text-danger"></span>
     </div>
     <button type="submit">Submit</button> 
-    @if (Model.ReviewID != null) 
-    {
-        <div>
-            Name = @(Model.Name) | Quality = @(Model.Quality) | Visit Time = @(Model.VisitTime)
-        </div>
-    }
 </form>

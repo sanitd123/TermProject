@@ -33,7 +33,7 @@ namespace RestaurantReviewCoreMVC.Models
             review.Service = int.Parse(myData.Tables[0].Rows[0]["SERVICE"].ToString());
             review.Atmosphere = int.Parse(myData.Tables[0].Rows[0]["ATMOSPHERE"].ToString());
             review.Price = int.Parse(myData.Tables[0].Rows[0]["PRICE"].ToString());
-            review.VisitTime = DateTime.Parse(myData.Tables[0].Rows[0]["VISIT_DATE"].ToString());
+            review.VisitTime = DateTime.Parse(myData.Tables[0].Rows[0]["VISIT_TIME"].ToString());
 
             return review;
         }
@@ -53,7 +53,26 @@ namespace RestaurantReviewCoreMVC.Models
             objCommand.Parameters.AddWithValue("@service", review.Service);
             objCommand.Parameters.AddWithValue("@atmosphere", review.Atmosphere);
             objCommand.Parameters.AddWithValue("@price", review.Price);
-            objCommand.Parameters.AddWithValue("@visitDate", review.VisitTime);
+            objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+        public void UpdateReview(Review review)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_UpdateReview"
+            };
+
+            objCommand.Parameters.AddWithValue("@reviewID", review.ReviewID);
+            objCommand.Parameters.AddWithValue("@name", review.Name);
+            objCommand.Parameters.AddWithValue("@comment", review.Comment);
+            objCommand.Parameters.AddWithValue("@quality", review.Quality);
+            objCommand.Parameters.AddWithValue("@service", review.Service);
+            objCommand.Parameters.AddWithValue("@atmosphere", review.Atmosphere);
+            objCommand.Parameters.AddWithValue("@price", review.Price);
+            objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
 
             db.DoUpdateUsingCmdObj(objCommand);
         }
@@ -81,6 +100,44 @@ namespace RestaurantReviewCoreMVC.Models
             reservation.Status = myData.Tables[0].Rows[0]["STATUS"].ToString();
 
             return reservation;
+        }
+        public void InsertReservation(Reservation reservation)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_InsertReservation"
+            };
+
+            objCommand.Parameters.AddWithValue("@restaurantID", reservation.RestaurantID);
+            objCommand.Parameters.AddWithValue("@name", reservation.Name);
+            objCommand.Parameters.AddWithValue("@phone", reservation.Phone);
+            objCommand.Parameters.AddWithValue("@email", reservation.Email);
+            objCommand.Parameters.AddWithValue("@reservationTime", reservation.ReservationTime);
+            objCommand.Parameters.AddWithValue("@partySize", reservation.PartySize);
+            objCommand.Parameters.AddWithValue("@comment", reservation.Comment);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+
+        public void UpdateReservation(Reservation reservation)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_UpdateReservation"
+            };
+
+            objCommand.Parameters.AddWithValue("@reservationID", reservation.ReservationID);
+            objCommand.Parameters.AddWithValue("@name", reservation.Name);
+            objCommand.Parameters.AddWithValue("@phone", reservation.Phone);
+            objCommand.Parameters.AddWithValue("@email", reservation.Email);
+            objCommand.Parameters.AddWithValue("@reservationTime", reservation.ReservationTime);
+            objCommand.Parameters.AddWithValue("@partySize", reservation.PartySize);
+            objCommand.Parameters.AddWithValue("@comment", reservation.Comment);
+            objCommand.Parameters.AddWithValue("@status", reservation.Status);
+
+            db.DoUpdateUsingCmdObj(objCommand);
         }
     }
 }

@@ -2,37 +2,51 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+
 }
 @model RestaurantReviewCoreMVC.Models.Reservation
 <form method="post">
     <div>
         <label>Name</label><br />
-        <input asp-for="Name" type="text" />
+        <input asp-for="Name" value="@Model.Name" type="text" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div>
         <label>Phone</label><br />
-        <input asp-for="Phone" type="tel" pattern="\(\d{3}\)\s\d{3}[-]\d{4}" />
+        <input asp-for="Phone" value="@Model.Phone" type="tel" pattern="\(\d{3}\)\s\d{3}[-]\d{4}" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
     <div>
         <label>Email</label>
-        <input asp-for="Email" type="email" />
+        <input asp-for="Email" value="@Model.Email" type="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div>
         <label>Reservation Time</label>
-        <input asp-for="ReservationTime" type="datetime-local" />
+        <input asp-for="ReservationTime" value="@Model.ReservationTime" type="datetime-local" />
+        <span asp-validation-for="ReservationTime" class="text-danger"></span>
     </div>
     <div>
         <label>Party Size</label>
         <select asp-for="PartySize">
             @for (int i = 1; i < 13; i++)
             {
-                <option value="@i">@i</option>
+                if (Model.PartySize == i)
+                {
+                    <option value="@i" selected>@i</option>
+                }
+                else
+                {
+                    <option value="@i">@i</option>
+                }
             }
         </select>
+        <span asp-validation-for="PartySize" class="text-danger"></span>
     </div>
     <div>
         <label>Comment</label>
-        <input asp-for="Comment" type="text" />
+        <input asp-for="Comment" value="@Model.Comment" type="text" />
+        <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
     <button type="submit">Submit</button>
 </form>
