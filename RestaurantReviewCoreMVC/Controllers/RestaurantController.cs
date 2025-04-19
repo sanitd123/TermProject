@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantReviewCoreMVC.Models;
+using System.Net;
+using System.Text.Json;
 
 namespace RestaurantReviewCoreMVC.Controllers
 {
     public class RestaurantController : Controller
     {
+        string webApiUrl = "https://localhost:7110/api/Review/";
+        // string webApiUrl = "https:cis-iis2.temple.edu/Spring2025/CIS3342_tui96569/TermProject/api/Review/";
         public IActionResult Index()
         {
             return View();
         }
         public IActionResult Test() 
         {
-            TempData["reviewID"] = 1;
+            TempData["reservationID"] = 1;
             HttpContext.Session.SetInt32("accountID", 2);
             TempData["restaurantID"] = 1;
-            return RedirectToAction("Review");
+            return RedirectToAction("Reservation");
         }
 
         [HttpGet]
@@ -22,12 +26,26 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             if (TempData.Peek("reviewID") != null) // if redirected with reviewID update
             {
-                RestaurantDB restaurantDB = new RestaurantDB();
-                Review review = restaurantDB.GetReview(Convert.ToInt32(TempData["reviewID"]));
+                WebRequest request = WebRequest.Create(webApiUrl + "GetReview/" + Convert.ToInt32(TempData["reviewID"]));
+                WebResponse response = request.GetResponse();
+
+                Stream theDataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(theDataStream);
+                string data = reader.ReadToEnd();
+                reader.Close();
+                response.Close();
+
+                Review review = JsonSerializer.Deserialize<Review>(data);
+
                 return View("Review", review);
             }
-
-            return View("Review", new Review()); // no reviewID insert
+            else
+            {
+                Review review = new Review();
+                review.AccountID = (int)HttpContext.Session.GetInt32("accountID");
+                review.RestaurantID = Convert.ToInt32(TempData["restaurantID"]);
+                return View("Review", review); // no reviewID insert
+            }
         }
 
         [HttpPost]
@@ -35,21 +53,52 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             if (!ModelState.IsValid) // input validation does not pass
             {
-                TempData.Keep();
                 return View("Review", review);
             }
 
-            review.AccountID = HttpContext.Session.GetInt32("accountID").GetValueOrDefault();
-            review.RestaurantID = Convert.ToInt32(TempData["restaurantID"]);
-            RestaurantDB restaurantDB = new RestaurantDB();
+            string jsonReview = JsonSerializer.Serialize(review);
 
             if (review.ReviewID < 1)
             {
-                restaurantDB.InsertReview(review);
+                try
+                {
+                    WebRequest request = WebRequest.Create(webApiUrl + "InsertReview");
+                    request.Method = "POST";
+                    request.ContentLength = jsonReview.Length;
+                    request.ContentType = "application/json";
+
+                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
+                    writer.Write(jsonReview);
+                    writer.Flush();
+                    writer.Close();
+
+                    request.GetResponse();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
             else
             {
-               restaurantDB.UpdateReview(review);
+                try
+                {
+                    WebRequest request = WebRequest.Create(webApiUrl + "UpdateReview");
+                    request.Method = "PUT";
+                    request.ContentLength = jsonReview.Length;
+                    request.ContentType = "application/json";
+
+                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
+                    writer.Write(jsonReview);
+                    writer.Flush();
+                    writer.Close();
+
+                    request.GetResponse();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
 
             return View("Review", review);
@@ -64,8 +113,12 @@ namespace RestaurantReviewCoreMVC.Controllers
                 Reservation reservation = restaurantDB.GetReservation(Convert.ToInt32(TempData["reservationID"]));
                 return View("Reservation", reservation);
             }
-
-            return View("Reservation", new Reservation()); // no reservationID insert
+            else
+            {
+                Reservation reservation = new Reservation();
+                reservation.RestaurantID = Convert.ToInt32(TempData["restaurantID"]);
+                return View("Reservation", reservation); // no reservationID insert
+            }
         }
 
         [HttpPost]
@@ -73,11 +126,9 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             if (!ModelState.IsValid) // input validation does not pass
             {
-                TempData.Keep();
                 return View("Reservation", reservation);
             }
 
-            reservation.ReservationID = Convert.ToInt32(TempData["restaurantID"]);
             RestaurantDB restaurantDB = new RestaurantDB();
 
             if (reservation.ReservationID < 1)

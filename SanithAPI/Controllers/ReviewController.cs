@@ -123,8 +123,8 @@ namespace SanithAPI.Controllers
             return review;
         }
 
-        // POST: api/Review/InsertReview/id - insert review
-        [HttpPost("InsertReview/{id}")]        
+        // POST: api/Review/InsertReview - insert review
+        [HttpPost("InsertReview")]        
         public void Insert([FromBody] Review review)
         {
             SqlCommand objCommand = new SqlCommand
@@ -147,8 +147,8 @@ namespace SanithAPI.Controllers
             db.DoUpdateUsingCmdObj(objCommand);
         }
 
-        // PUT: api/Review/UpdateReview/id - Update review with reviewID
-        [HttpPut("UpdateReview/{id}")]
+        // PUT: api/Review/UpdateReview - Update review with reviewID
+        [HttpPut("UpdateReview")]
         public void Update([FromBody] Review review)
         {
             SqlCommand objCommand = new SqlCommand

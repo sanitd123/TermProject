@@ -1,4 +1,5 @@
 ﻿@{
+    
 }
 @model RestaurantReviewCoreMVC.Models.Review
 
@@ -78,5 +79,14 @@
         <input asp-for="VisitTime" type="datetime-local" />
         <span asp-validation-for="VisitTime" class="text-danger"></span>
     </div>
-    <button type="submit">Submit</button> 
+    <button type="submit">Submit</button>
+
+    <div>
+        ReviewID: @Model.ReviewID | AccountID: @Model.AccountID | RestaurantID: @Model.RestaurantID
+    </div>
+
+    <input asp-for="ReviewID" type="hidden" />
+    <input asp-for="AccountID" type="hidden" />
+    <input asp-for="RestaurantID" type="hidden" />
+
 </form>

@@ -1,19 +1,21 @@
-﻿namespace SanithAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SanithAPI.Models
 {
     public class Review
     {
-        private int? reviewID;
-        private int accountID;
-        private int restaurantID;
-        private string name;
-        private string comment;
-        private int quality;
-        private int service;
-        private int atmosphere;
-        private int price;
-        private DateTime visitTime;
+        private int reviewID = -1;
+        private int accountID = -1;
+        private int restaurantID = -1;
+        private string name = "";
+        private string comment = "";
+        private int quality = -1;
+        private int service = -1;
+        private int atmosphere = -1;
+        private int price = -1;
+        private DateTime visitTime = default;
 
-        public int? ReviewID
+        public int ReviewID
         {
             get { return reviewID; }
             set { reviewID = value; }
@@ -28,31 +30,37 @@
             get { return restaurantID; }
             set { restaurantID = value; }
         }
+        [Required(ErrorMessage = "Name required")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+        [Required(ErrorMessage = "Comment required")]
         public string Comment
         {
             get { return comment; }
             set { comment = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a quality rating")]
         public int Quality
         {
             get { return quality; }
             set { quality = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a service rating")]
         public int Service
         {
             get { return service; }
             set { service = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick an atmosphere rating")]
         public int Atmosphere
         {
             get { return atmosphere; }
             set { atmosphere = value; }
         }
+        [Range(1, 5, ErrorMessage = "Pick a price rating")]
         public int Price
         {
             get { return price; }

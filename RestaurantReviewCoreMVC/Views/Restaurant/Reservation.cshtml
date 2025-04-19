@@ -23,7 +23,7 @@
     </div>
     <div>
         <label>Reservation Time</label>
-        <input asp-for="ReservationTime" value="@Model.ReservationTime" type="datetime-local" />
+        <input asp-for="ReservationTime" value="@Model.ReservationTime.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
         <span asp-validation-for="ReservationTime" class="text-danger"></span>
     </div>
     <div>
@@ -49,4 +49,8 @@
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
     <button type="submit">Submit</button>
+
+    <input asp-for="ReservationID" type="hidden" />
+    <input asp-for="RestaurantID" type="hidden" />
+
 </form>
