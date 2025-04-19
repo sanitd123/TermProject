@@ -5,30 +5,51 @@
 
 }
 @model RestaurantReviewCoreMVC.Models.Reservation
-<form method="post">
-    <div>
-        <label>Name</label><br />
-        <input asp-for="Name" value="@Model.Name" type="text" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<form method="post" class="container">
+    <h2 class="text-center mb-4 fw-bold">
+        @if (Model.ReservationID == -1)
+        {
+            @:Make a Reservation
+        }
+        else
+        {
+            @:Update The Reservation
+        }
+    </h2>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Name</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Name" value="@Model.Name" type="text" />
     </div>
-    <div>
-        <label>Phone</label><br />
-        <input asp-for="Phone" value="@Model.Phone" type="tel" pattern="\(\d{3}\)\s\d{3}[-]\d{4}" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Phone Number</label>
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Phone" value="@Model.Phone" type="tel" pattern="\(\d{3}\)\s\d{3}[-]\d{4}" />
     </div>
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" value="@Model.Email" type="email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Email</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Email" value="@Model.Email" type="text" />
     </div>
-    <div>
-        <label>Reservation Time</label>
-        <input asp-for="ReservationTime" value="@Model.ReservationTime.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
-        <span asp-validation-for="ReservationTime" class="text-danger"></span>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Reservation Time</label>
+            <span asp-validation-for="ReservationTime" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="ReservationTime" value="@Model.ReservationTime.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
     </div>
-    <div>
-        <label>Party Size</label>
-        <select asp-for="PartySize">
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Party Size</label>
+            <span asp-validation-for="PartySize" class="text-danger"></span>
+        </div>
+        <select class="form-select" asp-for="PartySize">
             @for (int i = 1; i < 13; i++)
             {
                 if (Model.PartySize == i)
@@ -41,14 +62,15 @@
                 }
             }
         </select>
-        <span asp-validation-for="PartySize" class="text-danger"></span>
     </div>
-    <div>
-        <label>Comment</label>
-        <input asp-for="Comment" value="@Model.Comment" type="text" />
-        <span asp-validation-for="Comment" class="text-danger"></span>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Comment</label>
+            <span asp-validation-for="Comment" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Comment" value="@Model.Comment" type="text" />
     </div>
-    <button type="submit">Submit</button>
+    <button class="btn btn-primary" type="submit">Submit</button>
 
     <input asp-for="ReservationID" type="hidden" />
     <input asp-for="RestaurantID" type="hidden" />

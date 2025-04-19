@@ -3,83 +3,123 @@
 }
 @model RestaurantReviewCoreMVC.Models.Review
 
-<form method="post">
-    <div>
-        <label>Name</label><br />
-        <input asp-for="Name" value="@Model.Name" type="text" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Comment</label><br />
-        <input asp-for="Comment" value="@Model.Comment" type="text" />
-        <span asp-validation-for="Comment" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Quality</label><br />
-        @for (int i = 1; i < 6; i++)
+<form method="post" class="container">
+    <h2 class="text-center mb-4 fw-bold">
+        @if (Model.ReviewID == -1)
         {
-            if (Model.Quality == i)
-            {
-                <label><input asp-for="Quality" value="@i" type="radio" checked />@i</label>
-            }
-            else 
-            {
-                <label><input asp-for="Quality" value="@i" type="radio" />@i</label>
-            }
+            @:Write a New Review
         }
-        <span asp-validation-for="Quality" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Service</label><br />
-        @for (int i = 1; i < 6; i++)
+        else
         {
-            if (Model.Service == i) 
-            {
-                <label><input asp-for="Service" value="@i" type="radio" checked />@i</label>
-            }
-            else 
-            {
-                <label><input asp-for="Service" value="@i" type="radio" />@i</label>
-            }
+            @:Update Your Review
         }
-        <span asp-validation-for="Service" class="text-danger"></span>
+    </h2>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Name</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Name" value="@Model.Name" type="text" />
     </div>
-    <div>
-        <label>Atmosphere</label><br />
-        @for (int i = 1; i < 6; i++)
-        {
-            if (Model.Atmosphere == i) 
-            {
-                <label><input asp-for="Atmosphere" value="@i" type="radio" checked />@i</label>
-            }
-            else 
-            {
-                <label><input asp-for="Atmosphere" value="@i" type="radio" />@i</label>
-            }
-        }
-        <span asp-validation-for="Atmosphere" class="text-danger"></span>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Comment</label>
+            <span asp-validation-for="Comment" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="Comment" value="@Model.Comment" type="text" />
     </div>
-    <div>
-        <label>Price</label><br />
-        @for (int i = 1; i < 6; i++)
-        {
-            if (Model.Price == i) 
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Quality</label>
+            <span asp-validation-for="Quality" class="text-danger"></span>
+        </div>
+        <div class="d-flex justify-content-between w-25">
+            @for (int i = 1; i < 6; i++)
             {
-                <label><input asp-for="Price" value="@i" type="radio" checked />@i</label>
+                if (Model.Quality == i)
+                {
+                    <label><input asp-for="Quality" value="@i" type="radio" checked />@i</label>
+                }
+                else
+                {
+                    <label><input asp-for="Quality" value="@i" type="radio" />@i</label>
+                }
             }
-            else
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Service</label>
+            <span asp-validation-for="Service" class="text-danger"></span>
+        </div>
+        <div class="d-flex justify-content-between w-25">
+            @for (int i = 1; i < 6; i++)
             {
-                <label><input asp-for="Price" value="@i" type="radio" />@i</label>        
+                if (Model.Service == i)
+                {
+                    <label><input asp-for="Service" value="@i" type="radio" checked />@i</label>
+                }
+                else
+                {
+                    <label><input asp-for="Service" value="@i" type="radio" />@i</label>
+                }
             }
-        }
-        <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
     </div>
-    <div>
-        <label>Visit Time</label>
-        <input asp-for="VisitTime" type="datetime-local" />
-        <span asp-validation-for="VisitTime" class="text-danger"></span>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Atmosphere</label>
+            <span asp-validation-for="Atmosphere" class="text-danger"></span>
+        </div>
+        <div class="d-flex justify-content-between w-25">
+            @for (int i = 1; i < 6; i++)
+            {
+                if (Model.Atmosphere == i)
+                {
+                    <label><input asp-for="Atmosphere" value="@i" type="radio" checked />@i</label>
+                }
+                else
+                {
+                    <label><input asp-for="Atmosphere" value="@i" type="radio" />@i</label>
+                }
+            }
+        </div>
     </div>
-    <button type="submit">Submit</button>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Price</label>
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="d-flex justify-content-between w-25">
+            @for (int i = 1; i < 6; i++)
+            {
+                if (Model.Price == i)
+                {
+                    <label><input asp-for="Price" value="@i" type="radio" checked />@i</label>
+                }
+                else
+                {
+                    <label><input asp-for="Price" value="@i" type="radio" />@i</label>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label">Visit Time</label>
+            <span asp-validation-for="VisitTime" class="text-danger"></span>
+        </div>
+        <input class="form-control" asp-for="VisitTime" type="datetime-local" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
 
     <div>
         ReviewID: @Model.ReviewID | AccountID: @Model.AccountID | RestaurantID: @Model.RestaurantID

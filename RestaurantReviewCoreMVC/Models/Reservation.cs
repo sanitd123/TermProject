@@ -55,7 +55,6 @@ namespace RestaurantReviewCoreMVC.Models
             get { return partySize; }
             set { partySize = value; }
         }
-        [Required(ErrorMessage = "Comment required")]
         public string Comment
         {
             get { return comment; }
