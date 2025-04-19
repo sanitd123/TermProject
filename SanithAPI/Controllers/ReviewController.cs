@@ -14,8 +14,8 @@ namespace SanithAPI.Controllers
             return View();
         }
 
-        // GET: api/Review/restaurant/{id} - Select all reviews for a restaurant by restaurantID
-        [HttpGet("restaurant/{id}")]
+        // GET: api/Review/GetAllReviewsByRestaurant/{id} - Select all reviews for a restaurant by restaurantID
+        [HttpGet("GetAllReviewsByRestaurant/{id}")]
         public List<Review> GetAllReviewsByRestaurant(int id)
         {
             SqlCommand objCommand = new SqlCommand
@@ -45,7 +45,7 @@ namespace SanithAPI.Controllers
                 review.Service = int.Parse(row["SERVICE"].ToString());
                 review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
                 review.Price = int.Parse(row["PRICE"].ToString());
-                review.VisitTime = DateTime.Parse(row["VISIT_DATE"].ToString());
+                review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
 
                 reviewList.Add(review);
             }
@@ -54,7 +54,7 @@ namespace SanithAPI.Controllers
         }
 
         // GET: api/Review/reviewer/{id} - Select all reviews from a reviewer by accountID(profileID)
-        [HttpGet("reviewer/{id}")]
+        [HttpGet("GetAllReviewsByReviewer/{id}")]
         public List<Review> GetAllReviewsByReviewer(int id)
         {
             SqlCommand objCommand = new SqlCommand
@@ -84,7 +84,7 @@ namespace SanithAPI.Controllers
                 review.Service = int.Parse(row["SERVICE"].ToString());
                 review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
                 review.Price = int.Parse(row["PRICE"].ToString());
-                review.VisitTime = DateTime.Parse(row["VISIT_DATE"].ToString());
+                review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
 
                 reviewList.Add(review);
             }
@@ -92,16 +92,9 @@ namespace SanithAPI.Controllers
             return reviewList;
         }
 
-        // TEST GET: api/Review
-        [HttpGet]
-        public string Get()
-        {
-            return "I can test my review api";
-        }
-
-        // GET: api/Review/{id} - Select review by reviewID
-        [HttpGet("{id}")]
-        public Review Get(int id)
+        // GET: api/Review/GetReview/id - get review by reviewID
+        [HttpGet("GetReview/{id}")]
+        public Review GetReview(int id)
         {
             SqlCommand objCommand = new SqlCommand
             {
@@ -125,13 +118,13 @@ namespace SanithAPI.Controllers
             review.Service = int.Parse(row["SERVICE"].ToString());
             review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
             review.Price = int.Parse(row["PRICE"].ToString());
-            review.VisitTime = DateTime.Parse(row["VISIT_DATE"].ToString());
+            review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
 
             return review;
         }
 
-        // POST: api/Review - insert review
-        [HttpPost]        
+        // POST: api/Review/InsertReview/id - insert review
+        [HttpPost("InsertReview/{id}")]        
         public void Insert([FromBody] Review review)
         {
             SqlCommand objCommand = new SqlCommand
@@ -154,8 +147,8 @@ namespace SanithAPI.Controllers
             db.DoUpdateUsingCmdObj(objCommand);
         }
 
-        // PUT: api/Review - Update review with reviewID
-        [HttpPut]
+        // PUT: api/Review/UpdateReview/id - Update review with reviewID
+        [HttpPut("UpdateReview/{id}")]
         public void Update([FromBody] Review review)
         {
             SqlCommand objCommand = new SqlCommand
@@ -177,8 +170,8 @@ namespace SanithAPI.Controllers
             db.DoUpdateUsingCmdObj(objCommand);
         }
 
-        // DELETE: api/Review/{id} - Delete review with reviewID
-        [HttpDelete("{id}")]
+        // DELETE: api/Review/DeleteReview/{id} - Delete review with reviewID
+        [HttpDelete("DeleteReview/{id}")]
         public void Delete(int id)
         {
             SqlCommand objCommand = new SqlCommand
