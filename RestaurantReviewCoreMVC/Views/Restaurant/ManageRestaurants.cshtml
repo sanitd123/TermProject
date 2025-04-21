@@ -1,0 +1,97 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using RestaurantReviewCoreMVC.Models
+@model List<Restaurant>
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+
+    ViewData["Title"] = "Your Restaurants";
+}
+<style>
+    .dashboard-container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+</style>
+
+<html>
+<head>
+
+
+
+
+
+
+
+</head>
+<body>
+    <h1>@ViewData["Title"]</h1>
+
+    @{
+        string accType = Context.Session.GetString("AccountType");
+        
+        if (accType != null && accType.Equals("Representative"))
+        {
+                    <div class="dashboard-container">
+
+                        <a asp-controller="Restaurant" asp-action="ManageRestaurants" class="btn btn-secondary">Manage Restaurants</a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
+
+                    </div>
+        }
+        else if (accType != null && accType.Equals("Reviewer"))
+        {
+                    <div class="dashboard-container">
+
+                        <a asp-action="" class="btn btn-secondary">Manage Reviews</a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
+
+
+                    </div>
+        }
+        else
+        {
+                    <div class="dashboard-container">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Login</a>
+
+                    </div>
+        }
+    }
+    
+
+
+    <br />
+    <br />
+    
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            foreach (Restaurant restaurant in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@restaurant.Title</h5>
+                            <p class="card-text">Address: @restaurant.Street, @restaurant.City, @restaurant.State, @restaurant.Zipcode</p>
+                            <p class="card-text">Cuisine: @restaurant.Cuisine</p>
+                            <p class="card-text">Average Rating: @restaurant.AvgScore</p>
+                            <a asp-controller="Restaurant" asp-action="ViewRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">View Details</a>
+                            <a asp-controller="Restaurant" asp-action="GetEditRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">Edit Restaurant</a>
+                            <form method="post" asp-controller="Restaurant" asp-action="DeleteRestaurant" asp-route-id="@restaurant.RestaurantID" class="d-inline">
+                                
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this restaurant?');">Delete Restaurant</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+
+    </div>
+
+</body>
+
+</html>
