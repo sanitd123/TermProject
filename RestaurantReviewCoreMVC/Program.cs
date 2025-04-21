@@ -10,6 +10,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
 }
 );
+builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();
