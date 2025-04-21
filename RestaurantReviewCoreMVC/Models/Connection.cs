@@ -7,10 +7,10 @@ namespace RestaurantReviewCoreMVC.Models
     public class DBConnect
     {
         // Main Connection String - used for the published web application and project submissions.
-        //String SqlConnectString = "server=cis-mssql1.temple.edu;Database=sp25_3342_tui96569;User id=tui96569;Password=eeJ9aef3faez;TrustServerCertificate=True;";
+        //String SqlConnectString = "server=cis-mssql1.temple.edu;Database=sp25_3342_tuk34053;User id=tuk34053;Password=ia3muL3eeX;TrustServerCertificate=true";
 
         // Home Connection String - used for working from home using SSH Tunneling.
-        String SqlConnectString = "server=127.0.0.1,5555;Database=sp25_3342_tui96569;User id=tui96569;Password=eeJ9aef3faez;TrustServerCertificate=True;";
+        String SqlConnectString = "server=127.0.0.1,5555;Database=sp25_3342_tuk34053;User id=tuk34053;Password=ia3muL3eeX;TrustServerCertificate=true";
 
         SqlConnection myConnectionSql;
         SqlCommand objCmd;
@@ -140,7 +140,7 @@ namespace RestaurantReviewCoreMVC.Models
             // Returns the number of rows affected by the update.
             // Returns -1 when an exsception occurs.
             // This method is used for passing parameters to a Stored Procedure
-            //try
+            try
             {
                 theCommandObject.Connection = myConnectionSql;
                 theCommandObject.Connection.Open();
@@ -148,7 +148,7 @@ namespace RestaurantReviewCoreMVC.Models
                 theCommandObject.Connection.Close();
                 return ret;
             }
-            //catch (Exception ex)
+            catch (Exception ex)
             {
                 return -1;
             }

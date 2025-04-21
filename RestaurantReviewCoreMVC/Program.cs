@@ -10,6 +10,17 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
 }
 );
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyOrigin",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7145") 
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 
 
 var app = builder.Build();
@@ -22,17 +33,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseSession();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowMyOrigin");
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
+
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Restaurant}/{action=Test}/{id?}");
+    pattern: "{controller=Restaurant}/{action=SearchRestaurant}/{id?}");
 
 app.Run();

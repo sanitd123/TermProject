@@ -20,8 +20,9 @@ namespace RestaurantReviewCoreMVC.Models
         private string phone;
         private string email;
         private string website;
+        private string hours;
+        private string owner;
 
-        private Dictionary<string, string> businessHours = new Dictionary<string, string>();
         private List<GalleryPhoto> galleryPhotoList = new List<GalleryPhoto>();
         private List<Review> reviewList = new List<Review>();
 
@@ -90,5 +91,10 @@ namespace RestaurantReviewCoreMVC.Models
             get { return website; }
             set { website = value; }
         }
+
+        public string Hours { get => hours; set => hours = value; }
+        public string Owner { get => owner; set => owner = value; }
+        public List<GalleryPhoto> GalleryPhotoList { get => galleryPhotoList; set => galleryPhotoList = value; }
+        public List<Review> ReviewList { get => reviewList; set => reviewList = value; }
     }
 }

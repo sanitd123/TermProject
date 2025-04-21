@@ -1,5 +1,116 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model RestaurantReviewCoreMVC.Models.Restaurant
+@inject IHttpContextAccessor HttpContextAccessor
+<h>Restaurant Details</h>
+<style>
+    .dashboard-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    }
+</style>
 @{
+    string accType = Context.Session.GetString("AccountType");
+
+    if (accType != null && accType.Equals("Representative"))
+    {
+        <div class="dashboard-container">
+
+            <a asp-controller="Restaurant" asp-action="ManageRestaurants" class="btn btn-secondary">Manage Restaurants</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
+
+        </div>
+    }
+    else if (accType != null && accType.Equals("Reviewer"))
+    {
+        <div class="dashboard-container">
+
+            <a asp-action="" class="btn btn-secondary">Manage Reviews</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
+
+
+        </div>
+    }
+    else
+    {
+        <div class="dashboard-container">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Login</a>
+
+        </div>
+    }
 }
+<div>
+
+    Title:
+    @Model.Title
+    <br />
+    Description:
+    @Model.Description
+    <br />
+    Average Score:
+    @Model.AvgScore
+    <br />
+    Cuisine:
+    @Model.Cuisine
+    <br />
+    Street:
+    @Model.Street
+    <br />
+    City:
+    @Model.City
+    <br />
+    State:
+    @Model.State
+    <br />
+    Zipcode:
+    @Model.Zipcode
+    <br />
+    Phone:
+    @Model.Phone
+    <br />
+    Email:
+    @Model.Email
+    <br />
+    Website:
+    @Model.Website
+    <br />
+    Hours:
+    @Model.Hours
+    <br />
+    Owner:
+    @Model.Owner
+</div>
+
+<h3>Reviews</h3>
+<div style="display: flex; flex-direction: column;">
+    @foreach (var review in Model.ReviewList)
+    {
+        
+        double avgScore = (review.Quality + review.Atmosphere + review.Price + review.Service) / 4.0;
+        
+        <div style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 10px;">
+            <div style="margin-right: 20px;">
+                <strong>Name:</strong> @review.Name
+            </div>
+            <div style="margin-right: 20px;">
+                <strong>Comment:</strong> @review.Comment
+            </div>
+            <div style="margin-right: 20px;">
+                <strong>Average Score:</strong> @avgScore
+            </div>
+            <div>
+                <strong>Time:</strong> @review.VisitTime
+            </div>
+            <div>
+                <a asp-controller="Restaurant" asp-action="Review" asp-route-id="@review.ReviewID">View Review</a>
+                
+            </div>
+        </div>
+    }
+</div>
+
+<div>
+    <a asp-action="Review">Leave Review</a>
+    <a asp-action="Reservation">Make Reservation</a>
+    <a asp-action="SearchRestaurant">Back to Search</a>
+</div>
