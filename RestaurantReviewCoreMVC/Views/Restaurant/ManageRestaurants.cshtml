@@ -79,6 +79,7 @@
                             <p class="card-text">Average Rating: @restaurant.AvgScore</p>
                             <a asp-controller="Restaurant" asp-action="ViewRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">View Details</a>
                             <a asp-controller="Restaurant" asp-action="GetEditRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">Edit Restaurant</a>
+                            <a asp-controller="Restaurant" asp-action="Reservation" asp-route-id="" class="btn btn-primary">View Reservations</a>
                             <form method="post" asp-controller="Restaurant" asp-action="DeleteRestaurant" asp-route-id="@restaurant.RestaurantID" class="d-inline">
                                 
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this restaurant?');">Delete Restaurant</button>
