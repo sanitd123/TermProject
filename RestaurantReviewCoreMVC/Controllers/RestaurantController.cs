@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using RestaurantReviewCoreMVC.Models;
 using System.Collections.Generic;
 using System.Net;
@@ -18,18 +20,44 @@ namespace RestaurantReviewCoreMVC.Controllers
         }
         public IActionResult Test() 
         {
-            TempData["reservationID"] = 1;
-            HttpContext.Session.SetInt32("accountID", 2);
-            TempData["restaurantID"] = 1;
-            return RedirectToAction("Reservation");
+            HttpContext.Session.SetInt32("AccountID", 1);
+            HttpContext.Session.SetString("AccountType", "Representative");
+            int restaurantID = 4;
+            TempData["RestaurantID"] = restaurantID;
+            return RedirectToAction("ViewRestaurant", new {restaurantID});
+
+
+            //HttpContext.Session.SetInt32("AccountID", 2);
+            //HttpContext.Session.SetString("AccountType", "Reviewer");
+            //return RedirectToAction("ManageReviews");
         }
 
+        // ============================== Review ===============================================
+
         [HttpGet]
-        public IActionResult Review()
+        public IActionResult ManageReviews()
         {
-            if (TempData.Peek("reviewID") != null) // if redirected with reviewID update
+            int accountID = Convert.ToInt32(HttpContext.Session.GetInt32("AccountID"));
+
+            WebRequest request = WebRequest.Create(webApiUrl + "GetAllReviewsByReviewer/" + accountID);
+            WebResponse response = request.GetResponse();
+
+            Stream theDataStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(theDataStream);
+            string data = reader.ReadToEnd();
+            reader.Close();
+            response.Close();
+
+            List<Review> reviewList = JsonSerializer.Deserialize<List<Review>>(data);
+
+            return View("ManageReviews", reviewList);
+        }
+        [HttpGet]
+        public IActionResult Review(int? reviewID, int? restaurantID)
+        {
+            if (reviewID.HasValue) // if redirected with reviewID update
             {
-                WebRequest request = WebRequest.Create(webApiUrl + "GetReview/" + Convert.ToInt32(TempData["reviewID"]));
+                WebRequest request = WebRequest.Create(webApiUrl + "GetReview/" + reviewID);
                 WebResponse response = request.GetResponse();
 
                 Stream theDataStream = response.GetResponseStream();
@@ -44,9 +72,11 @@ namespace RestaurantReviewCoreMVC.Controllers
             }
             else
             {
+                RestaurantDB restaurantDB = new RestaurantDB();
                 Review review = new Review();
-                review.AccountID = (int)HttpContext.Session.GetInt32("accountID");
-                review.RestaurantID = Convert.ToInt32(TempData["restaurantID"]);
+                review.AccountID = Convert.ToInt32(HttpContext.Session.GetInt32("accountID"));
+                review.RestaurantID = Convert.ToInt32(restaurantID);
+                review.RestaurantName = restaurantDB.GetRestaurantNameByID(review.RestaurantID);
                 return View("Review", review); // no reviewID insert
             }
         }
@@ -104,28 +134,58 @@ namespace RestaurantReviewCoreMVC.Controllers
                 }
             }
 
-            return View("Review", review);
-        }
-
-        [HttpGet]
-        public IActionResult Reservation()
-        {
-            if (TempData.Peek("reservationID") != null) // if redirected with reservationID update
-            {
-                RestaurantDB restaurantDB = new RestaurantDB();
-                Reservation reservation = restaurantDB.GetReservation(Convert.ToInt32(TempData["reservationID"]));
-                return View("Reservation", reservation);
-            }
-            else
-            {
-                Reservation reservation = new Reservation();
-                reservation.RestaurantID = Convert.ToInt32(TempData["restaurantID"]);
-                return View("Reservation", reservation); // no reservationID insert
-            }
+            return RedirectToAction("ManageReviews");
         }
 
         [HttpPost]
-        public IActionResult Reservation(Reservation reservation)
+        public IActionResult DeleteReview(int reviewID)
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create(webApiUrl + "DeleteReview/" + reviewID);
+                request.Method = "DELETE";
+                request.GetResponse();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return RedirectToAction("ManageReviews");
+        }
+
+        //==================== Reservation ================================================
+
+        [HttpGet]
+        public IActionResult ManageReservations(int restaurantID)
+        {
+            RestaurantDB restaurantDB = new RestaurantDB();
+            restaurantDB.UpdateExpiredReservations();
+            List<Reservation> reservationList = restaurantDB.GetAllReservationsByRestaurant(restaurantID);
+            return View("ManageReservations", reservationList);
+        }
+        
+        [HttpGet]
+        public IActionResult Reservation(int? reservationID, int? restaurantID)
+        {
+            Reservation reservation = new Reservation();
+            RestaurantDB restaurantDB = new RestaurantDB();
+
+            if (reservationID.HasValue) // if redirected with reservationID update
+            {
+                reservation = restaurantDB.GetReservation(Convert.ToInt32(reservationID));
+            }
+            else // if redirected without reservationID insert
+            {
+                reservation.RestaurantID = Convert.ToInt32(restaurantID);
+                reservation.RestaurantName = restaurantDB.GetRestaurantNameByID(reservation.RestaurantID);
+            }
+
+            return View("Reservation", reservation);
+        }
+
+        [HttpPost]
+        public IActionResult Reservation(Reservation reservation) // needs email
         {
             if (!ModelState.IsValid) // input validation does not pass
             {
@@ -137,29 +197,84 @@ namespace RestaurantReviewCoreMVC.Controllers
             if (reservation.ReservationID < 1)
             { 
                 restaurantDB.InsertReservation(reservation); // insert if reservationID is not provided
+                Email email = new Email();
+                if (email.SendReservationRequest(reservation))
+                {
+                    Console.WriteLine("Reservation request successfully sent");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to send reservation request");
+                }
+
+                return RedirectToAction("ViewRestaurant", new { reservation.RestaurantID });
             }
             else
             {
                 restaurantDB.UpdateReservation(reservation); // update if reservationID is provided
-            }
+                Email email = new Email();
+                if (email.SendModifyMail(reservation))
+                {
+                    Console.WriteLine("Modify reservation successfully sent");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to send modify reservation");
+                }
 
-            return View("Reservation", reservation);
+                return RedirectToAction("ManageReservations", new { reservation.RestaurantID });
+            }
         }
 
+        [HttpPost]
+        public IActionResult AcceptReservation(int reservationID, int restaurantID)
+        {
+            RestaurantDB restaurantDB = new RestaurantDB();
+            restaurantDB.AcceptReservation(reservationID);
 
+            Reservation reservation = restaurantDB.GetReservation(reservationID);
+            Email email = new Email();
+            if (email.SendAcceptMail(reservation))
+            {
+                Console.WriteLine("Accept reservation successfully sent");
+            }
+            else
+            {
+                Console.WriteLine("Failed to send accept reservation");
+            }
+
+            return RedirectToAction("ManageReservations", new { restaurantID });
+        }
+
+        [HttpPost]
+        public IActionResult DeclineReservation(int reservationID, int restaurantID) // update not delete
+        {
+            RestaurantDB restaurantDB = new RestaurantDB();
+            restaurantDB.DeclineReservation(reservationID);
+
+            Reservation reservation = restaurantDB.GetReservation(reservationID);
+            Email email = new Email();
+            if (email.SendDeclineMail(reservation))
+            {
+                Console.WriteLine("Decline reservation successfully sent");
+            }
+            else 
+            {
+                Console.WriteLine("Failed to send decline reservation");
+            }
+
+            return RedirectToAction("ManageReservations", new { restaurantID });
+        }
+
+        //======================= Restaurant ===============================================
 
         [HttpGet("Restaurant/ViewRestaurant/{restaurantID:int}")]
         public IActionResult ViewRestaurant(int restaurantID)
         {
-
-
             Console.WriteLine(restaurantID.ToString());
             string url = "https://localhost:7163/api/Restaurant/ViewRestaurant/" + restaurantID;
             WebRequest getRequest = WebRequest.Create(url);
             getRequest.Method = "GET";
-
-
-
 
             WebResponse response = getRequest.GetResponse();
 
@@ -169,6 +284,7 @@ namespace RestaurantReviewCoreMVC.Controllers
             string data = reader.ReadToEnd();
             Console.WriteLine(data);
             Restaurant restaurant = JsonSerializer.Deserialize<Restaurant>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            restaurant.FindCoordinate();
 
             return View("ViewRestaurant", restaurant);
 
@@ -231,21 +347,11 @@ namespace RestaurantReviewCoreMVC.Controllers
         [HttpGet]
         public IActionResult SearchRestaurant()
         {
-
             List<Restaurant> restaurants = new List<Restaurant>();
-            Restaurant rest = new Restaurant();
-            Restaurant rest2 = new Restaurant();
-            rest2.Title = "TITLE2";
-            rest.Title = "TITLE";
-            restaurants.Add(rest);
-            restaurants.Add(rest2);
-
-            Restaurant rest3 = new Restaurant();
-            Restaurant rest4 = new Restaurant();
-            rest3.Title = "TITLE3";
-            rest4.Title = "TITLE4";
-            restaurants.Add(rest3);
-            restaurants.Add(rest4);
+            if(HttpContext.Session.GetString("AccountType").IsNullOrEmpty())
+            {
+                HttpContext.Session.SetString("AccountType", "Guest");
+            }
             return View(restaurants);
         }
         [HttpPost]
@@ -254,7 +360,7 @@ namespace RestaurantReviewCoreMVC.Controllers
 
             try
             {
-                if (searchModel != null)
+                if (searchModel.Cuisines != null && searchModel.City != null )
                 {
 
                     string json = JsonSerializer.Serialize(searchModel);
@@ -275,54 +381,12 @@ namespace RestaurantReviewCoreMVC.Controllers
                     String data = reader.ReadToEnd();
 
                     List<Restaurant> restaurants = JsonSerializer.Deserialize<List<Restaurant>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if(restaurants.Count < 1)
+                    {
+                        restaurants.Add(new Restaurant());
+                        ViewData["Message"] = "No Results";
+                    }
                     return View(restaurants);
-                }
-                else
-                {
-                    //no search
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in SearchRestaurant (View): {ex.Message}\n{ex.StackTrace}");
-            }
-
-            return View();
-
-
-        }
-
-
-
-        [HttpPost]
-        public IActionResult SearchRestaurantReviewer(RestaurantSearch searchModel)
-        {
-
-            try
-            {
-                if (searchModel != null)
-                {
-
-                    string json = JsonSerializer.Serialize(searchModel);
-                    WebRequest request = WebRequest.Create("https://localhost:7163/api/Restaurant/SearchRestaurants");
-
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-                    request.ContentLength = json.Length;
-
-                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
-                    writer.Write(json);
-                    writer.Flush();
-                    writer.Close();
-
-                    WebResponse response = request.GetResponse();
-                    Stream theDataStream = response.GetResponseStream();
-                    StreamReader reader = new StreamReader(theDataStream);
-                    String data = reader.ReadToEnd();
-
-                    List<Restaurant> restaurants = JsonSerializer.Deserialize<List<Restaurant>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    return View(restaurants);
-
                 }
                 else
                 {
@@ -335,74 +399,24 @@ namespace RestaurantReviewCoreMVC.Controllers
                 Console.WriteLine($"Error in SearchRestaurant (View): {ex.Message}\n{ex.StackTrace}");
             }
 
-            return View();
+            ViewData["Message"] = "Input all Parameters";
+            return View(new List<Restaurant>());
 
 
         }
 
 
 
-
-        [HttpPost]
-        public IActionResult SearchRestaurantRepresentative(RestaurantSearch searchModel)
-        {
-
-            try
-            {
-                if (searchModel != null)
-                {
-
-                    string json = JsonSerializer.Serialize(searchModel);
-                    WebRequest request = WebRequest.Create("https://localhost:7163/api/Restaurant/SearchRestaurants");
-
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-                    request.ContentLength = json.Length;
-
-                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
-                    writer.Write(json);
-                    writer.Flush();
-                    writer.Close();
-
-                    WebResponse response = request.GetResponse();
-                    Stream theDataStream = response.GetResponseStream();
-                    StreamReader reader = new StreamReader(theDataStream);
-                    String data = reader.ReadToEnd();
-
-                    List<Restaurant> restaurants = JsonSerializer.Deserialize<List<Restaurant>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    return View(restaurants);
-                }
-                else
-                {
-                    //no search
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in SearchRestaurant (View): {ex.Message}\n{ex.StackTrace}");
-            }
-
-            return View();
-
-
-        }
+        
 
 
         public IActionResult ManageRestaurants()
         {
-            string id = HttpContext.Session.GetString("AccountID");
-            int accountID = int.Parse(id);
-
-
-
-
+            int accountID = Convert.ToInt32(HttpContext.Session.GetInt32("AccountID"));
 
             string url = "https://localhost:7163/api/Restaurant/GetRepresentativeRestaurants/" + accountID;
             WebRequest getRequest = WebRequest.Create(url);
             getRequest.Method = "GET";
-
-
-
 
             WebResponse response = getRequest.GetResponse();
 
@@ -413,11 +427,9 @@ namespace RestaurantReviewCoreMVC.Controllers
             Console.WriteLine(data);
             List<Restaurant> restaurants = JsonSerializer.Deserialize<List<Restaurant>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
+            restaurants[0].FindCoordinate();
+
             return View(restaurants);
-
-
-
-
         }
 
         [HttpPost]
@@ -474,11 +486,56 @@ namespace RestaurantReviewCoreMVC.Controllers
             return View("ModifyRestaurant", restaurant);
         }
 
-        [HttpPut]
-        public IActionResult EditRestaurant(int id)
+        [HttpPost]
+        public IActionResult EditRestaurant(Restaurant restaurant)
         {
-            return RedirectToAction("ManageRestaurants");
+            try
+            {
+                if (restaurant != null)
+                {
+                    Console.WriteLine("Rest not null");
+                    string json = JsonSerializer.Serialize(restaurant);
+                    WebRequest request = WebRequest.Create("https://localhost:7163/api/Restaurant/UpdateRestaurant");
+
+                    request.Method = "PUT";
+                    request.ContentType = "application/json";
+                    request.ContentLength = json.Length;
+
+                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
+                    writer.Write(json);
+                    writer.Flush();
+                    writer.Close();
+
+                    WebResponse response = request.GetResponse();
+                    Stream theDataStream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(theDataStream);
+                    String data = reader.ReadToEnd();
+
+
+                    if (data == "true")
+                    {
+
+                        //success
+                    }
+                    else if (data == "false")
+                    {
+                        //error
+                    }
+                }
+                else
+                {
+                    //no restaurant
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateRestaurant (View): {ex.Message}\n{ex.StackTrace}");
+            }
+
+            return View();
         }
+
+        
     }
 }
     

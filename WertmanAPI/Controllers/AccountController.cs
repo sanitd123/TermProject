@@ -131,5 +131,45 @@ namespace WertmanAPI.Controllers
             }
 
         }
+
+
+        [HttpPost("ForgotPassword")]
+        public Boolean ForgotPassword([FromBody]ForgotPassword account)
+        {
+            try
+            {
+                SqlCommand objCommand = new SqlCommand();
+                objCommand.CommandType = CommandType.StoredProcedure;
+                objCommand.CommandText = "TP_GetAccountByEmail";
+                objCommand.Parameters.AddWithValue("@accountEmail", account.Email );
+
+                DataSet accountDS = objDB.GetDataSet(objCommand);
+                Account compareAccount = new Account();
+                foreach (DataRow row in accountDS.Tables[0].Rows)
+                {
+                    compareAccount.Email = row["AccountEmail"].ToString();
+                    compareAccount.AnswerOne = row["AnswerOne"].ToString();
+                    compareAccount.AnswerTwo = row["AnswerTwo"].ToString();
+                    compareAccount.AnswerThree = row["AnswerThree"].ToString();
+
+                }
+
+                if(account.Email.ToLower().Equals(compareAccount.Email.ToLower()) && account.AnswerOne.ToLower().Equals(compareAccount.AnswerOne.ToLower())
+                    && account.AnswerTwo.ToLower().Equals(compareAccount.AnswerTwo.ToLower()) && account.AnswerThree.ToLower().Equals(compareAccount.AnswerThree.ToLower()))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ForgotPassword Failed");
+                return false ;
+
+            }
+        }
     }
 }

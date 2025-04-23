@@ -1,8 +1,11 @@
 ﻿using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 using RestaurantReviewCoreMVC.Models;
+using System.Data;
 using System.Net;
 using System.Text.Json;
+using Microsoft.Data.SqlClient;
 
 namespace RestaurantReviewCoreMVC.Controllers
 {
@@ -18,18 +21,78 @@ namespace RestaurantReviewCoreMVC.Controllers
         {
             return View();
         }
-        
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPassword forgotPassword)
+        {
+            if (forgotPassword != null)
+            {
+
+                try
+                {
+
+                    string json = JsonSerializer.Serialize(forgotPassword);
+                    WebRequest request = WebRequest.Create("https://localhost:7163/api/Account/ForgotPassword");
+
+                    request.Method = "POST";
+                    request.ContentType = "application/json";
+                    request.ContentLength = json.Length;
+
+                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
+                    writer.Write(json);
+                    writer.Flush();
+                    writer.Close();
+
+                    WebResponse response = request.GetResponse();
+                    Stream theDataStream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(theDataStream);
+                    String data = reader.ReadToEnd();
+
+                    if (data == "true")
+                    {
+
+                        ResetPassword passwordReset = new ResetPassword();
+                        passwordReset.GenerateCode();
+
+
+
+
+                        //send email
+
+
+
+
+                        ViewData["Message"] = "Password Reset Email Sent";
+                        return View("ForgotPasswordConfirm");
+                    }
+                    else if (data == "false")
+                    {
+                        ViewData["Message"] = "Account information unrecognized";
+                        return View();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    //error
+                    return View();
+                }
+
+
+
+            }
+            return View();
+        }
         [HttpPost]
         public IActionResult ResetPassword()
         {
             //get acc
             return View();
         }
-        
-        [HttpGet] 
+
+        [HttpGet]
         public IActionResult CreateAccount()
         {
-            return View(); 
+            return View();
         }
 
         [HttpPost]
@@ -38,10 +101,10 @@ namespace RestaurantReviewCoreMVC.Controllers
 
             if (account != null)
             {
-                
+
                 try
                 {
-                    
+
                     string json = JsonSerializer.Serialize(account);
                     WebRequest request = WebRequest.Create("https://localhost:7163/api/Account/CreateAccount");
 
@@ -102,29 +165,29 @@ namespace RestaurantReviewCoreMVC.Controllers
                 Console.WriteLine("Inside");
                 try
                 {
-                    
+
                     string url = "https://localhost:7163/api/Account/GetAccount/" + account.Email;
                     WebRequest getRequest = WebRequest.Create(url);
                     getRequest.Method = "GET";
-                    
 
-                   
+
+
 
                     WebResponse response = getRequest.GetResponse();
                     Stream theDataStream = response.GetResponseStream();
                     StreamReader reader = new StreamReader(theDataStream);
                     string data = reader.ReadToEnd();
                     Console.WriteLine(data);
-                    Account retrievedAccount = JsonSerializer.Deserialize<Account>(data , new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    Account retrievedAccount = JsonSerializer.Deserialize<Account>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     retrievedAccount.Password = account.Password;
-                    
-                    Console.WriteLine($"Retrieved Account - AccountID: {retrievedAccount?.AccountID}, Email: {retrievedAccount?.Email}, Name: {retrievedAccount?.Name}, Password: {retrievedAccount?.Password}, ..."); 
 
-                    
+                    Console.WriteLine($"Retrieved Account - AccountID: {retrievedAccount?.AccountID}, Email: {retrievedAccount?.Email}, Name: {retrievedAccount?.Name}, Password: {retrievedAccount?.Password}, ...");
+
+
 
 
                     string json = JsonSerializer.Serialize(retrievedAccount);
-                    
+
                     WebRequest request = WebRequest.Create("https://localhost:7163/api/Account/Login");
 
                     request.Method = "POST";
@@ -146,12 +209,21 @@ namespace RestaurantReviewCoreMVC.Controllers
                     {
                         HttpContext.Session.SetString("AccountID", retrievedAccount.AccountID.ToString());
                         HttpContext.Session.SetString("AccountType", retrievedAccount.AccountType.ToString());
-                        
-                        
-                        List<Restaurant> list = new List<Restaurant>();
-                        return View("~/Views/Restaurant/SearchRestaurant.cshtml", list );
 
-                            
+                        //var cookieOptions = new CookieOptions
+                        //{
+                         //   HttpOnly = true,
+                        //    Secure = true,
+                        //    SameSite = SameSiteMode.Lax,
+                        //    Expires = DateTimeOffset.MaxValue
+                       // };
+
+                       // Response.Cookies.Append("RememberMe", retrievedAccount.Email, cookieOptions);
+
+                        List<Restaurant> list = new List<Restaurant>();
+                        return View("~/Views/Restaurant/SearchRestaurant.cshtml", list);
+
+
                     }
                     else if (data == "false")
                     {
@@ -162,7 +234,7 @@ namespace RestaurantReviewCoreMVC.Controllers
 
 
 
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -181,5 +253,7 @@ namespace RestaurantReviewCoreMVC.Controllers
             HttpContext.Session.Clear();
             return View("~/Views/Restaurant/SearchRestaurant.cshtml", list);
         }
+        
+
     }
 }
