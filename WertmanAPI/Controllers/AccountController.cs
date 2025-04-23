@@ -102,15 +102,8 @@ namespace WertmanAPI.Controllers
                 objCommand.CommandType= CommandType.StoredProcedure;
                 objCommand.CommandText = "TP_GetAllAccounts";
                 DataSet myDataSet = objDB.GetDataSetUsingCmdObj(objCommand);
-                int newAccID = 1;
-                foreach(DataRow row in myDataSet.Tables[0].Rows)
-                {
-                    newAccID++;
-                }
-
                 
                 objCommand.CommandText = "TP_AddAccount";
-                objCommand.Parameters.AddWithValue("@accountID", newAccID);
                 objCommand.Parameters.AddWithValue("@accountOwner", account.Name);
                 objCommand.Parameters.AddWithValue("@accountPassword", account.Password);
                 objCommand.Parameters.AddWithValue("@accountEmail", account.Email);
@@ -118,8 +111,6 @@ namespace WertmanAPI.Controllers
                 objCommand.Parameters.AddWithValue("@answerOne", account.AnswerOne);
                 objCommand.Parameters.AddWithValue("@answerTwo", account.AnswerTwo);
                 objCommand.Parameters.AddWithValue("@answerThree", account.AnswerThree);
-
-
 
                 objDB.DoUpdateUsingCmdObj(objCommand);
                 return true;

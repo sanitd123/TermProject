@@ -9,11 +9,11 @@
     <h2 class="text-center mb-4 fw-bold">
         @if (Model.ReservationID == -1)
         {
-            @:Make a Reservation
+            @:Make a Reservation for @Model.RestaurantName
         }
         else
         {
-            @:Update The Reservation
+            @:Update The Reservation for @Model.Name
         }
     </h2>
     <div class="mb-3">
@@ -71,7 +71,15 @@
         <input class="form-control" asp-for="Comment" value="@Model.Comment" type="text" />
     </div>
     <button class="btn btn-primary" type="submit">Submit</button>
-
+    
+    @if (Model.ReservationID > 0)
+    {
+        <a class="btn btn-outline-primary" asp-controller="Restaurant" asp-action="ManageReservations" asp-route-restaurantID="@Model.RestaurantID">Go Back</a>
+    }
+    else
+    {
+        <a class="btn btn-outline-primary" asp-controller="Restaurant" asp-action="ViewRestaurant" asp-route-id="@Model.RestaurantID">Go Back</a>
+    }
     <input asp-for="ReservationID" type="hidden" />
     <input asp-for="RestaurantID" type="hidden" />
 

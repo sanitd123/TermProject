@@ -11,33 +11,6 @@
 </style>
 @{
     string accType = Context.Session.GetString("AccountType");
-
-    if (accType != null && accType.Equals("Representative"))
-    {
-        <div class="dashboard-container">
-
-            <a asp-controller="Restaurant" asp-action="ManageRestaurants" class="btn btn-secondary">Manage Restaurants</a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-        </div>
-    }
-    else if (accType != null && accType.Equals("Reviewer"))
-    {
-        <div class="dashboard-container">
-
-            <a asp-action="" class="btn btn-secondary">Manage Reviews</a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-
-        </div>
-    }
-    else
-    {
-        <div class="dashboard-container">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Login</a>
-
-        </div>
-    }
 }
 <div>
 
@@ -83,7 +56,7 @@
 
 <h3>Reviews</h3>
 <div style="display: flex; flex-direction: column;">
-    @foreach (var review in Model.ReviewList)
+    @foreach (Review review in Model.ReviewList)
     {
         
         double avgScore = (review.Quality + review.Atmosphere + review.Price + review.Service) / 4.0;
@@ -103,14 +76,22 @@
             </div>
             <div>
                 <a asp-controller="Restaurant" asp-action="Review" asp-route-id="@review.ReviewID">View Review</a>
-                
             </div>
         </div>
     }
 </div>
 
-<div>
-    <a asp-action="Review">Leave Review</a>
-    <a asp-action="Reservation">Make Reservation</a>
-    <a asp-action="SearchRestaurant">Back to Search</a>
+<div class="d-flex justify-content-end gap-2">
+    @if (accType.Equals("Reviewer"))
+    {
+        <form asp-controller="Restaurant" asp-action="Review" method="get">
+            <input type="hidden" name="restaurantID" value="@Model.RestaurantID" />
+            <button type="submit" class="btn btn-primary">Write a Review</button>
+        </form>
+    }
+    <form asp-controller="Restaurant" asp-action="Reservation" method="get">
+        <input type="hidden" name="restaurantID" value="@Model.RestaurantID" />
+        <button type="submit" class="btn btn-primary">Make a Reservation</button>
+    </form>
+    <a class="btn btn-primary" asp-action="SearchRestaurant" asp-controller="Restaurant">Back to Search</a>
 </div>

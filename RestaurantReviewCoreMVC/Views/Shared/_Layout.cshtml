@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    int? accountID = HttpContextAccessor.HttpContext.Session.GetInt32("AccountID");
+    string? accountType = HttpContextAccessor.HttpContext.Session.GetString("AccountType");
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,20 +16,31 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RestaurantReviewCoreMVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Restaurant" asp-action="SearchRestaurant">
+                    <img class="d-inline-block align-text-top me-2" src="~/images/home.jpg" alt="Logo" height="40px" />
+                    <span class="fw-bold">Restaurant Reviews</span>
+                </a>
+
+                <div class="d-flex ms-auto">
+                    @if (accountID.HasValue)
+                    {
+                        if (accountType.Equals("Representative"))
+                        {
+                            <a class="btn btn-outline-primary me-2" asp-controller="Restaurant" asp-action="ManageRestaurants">Manage Restaurant</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary me-2" asp-controller="Restaurant" asp-action="ManageReviews">Manage Reviews</a>
+                        }
+                        <form method="post" asp-controller="Account" asp-action="Logout">
+                            <button type="submit" class="btn btn-danger">Log Out</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-secondary me-2" asp-controller="Account" asp-action="Login">Log In</a>
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="CreateAccount">Sign Up</a>
+                    }
                 </div>
             </div>
         </nav>

@@ -28,21 +28,11 @@ namespace WertmanAPI.Controllers
                 objCommand.CommandType = CommandType.StoredProcedure;
                 objCommand.CommandText = "TP_GetAllRestaurants";
                 DataSet myDataSet = objDB.GetDataSetUsingCmdObj(objCommand);
-                int newRestaurantID = 1;
-                foreach (DataRow row in myDataSet.Tables[0].Rows)
-                {
-                    newRestaurantID++;
-                }
-
-
 
                 objCommand.CommandText = "TP_AddRestaurant";
-                objCommand.Parameters.AddWithValue("@restaurantID", newRestaurantID);//
                 objCommand.Parameters.AddWithValue("@cuisine", restaurant.Cuisine);
-
                 objCommand.Parameters.AddWithValue("@hours", restaurant.Hours);
                 objCommand.Parameters.AddWithValue("@restaurantName", restaurant.Title);//
-
                 objCommand.Parameters.AddWithValue("@street", restaurant.Street);
                 objCommand.Parameters.AddWithValue("@city", restaurant.City);
                 objCommand.Parameters.AddWithValue("@state", restaurant.State);

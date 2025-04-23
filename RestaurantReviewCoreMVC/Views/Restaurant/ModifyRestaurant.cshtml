@@ -12,33 +12,6 @@
 </style>
 @{
     string accType = Context.Session.GetString("AccountType");
-    
-    if (accType != null && accType.Equals("Representative"))
-    {
-        <div class="dashboard-container">
-
-            <a asp-controller="Restaurant" asp-action="ManageRestaurants" class="btn btn-secondary">Manage Restaurants</a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-        </div>
-    }
-    else if (accType != null && accType.Equals("Reviewer"))
-    {
-        <div class="dashboard-container">
-
-            <a asp-action="" class="btn btn-secondary">Manage Reviews</a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-
-        </div>
-    }
-    else
-    {
-        <div class="dashboard-container">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Login</a>
-
-        </div>
-    }
 }
 <form method="post" asp-controller="Restaurant" asp-action="Edit">
     <input type="hidden" asp-for="RestaurantID" /> @* Hidden field for the ID is crucial! *@

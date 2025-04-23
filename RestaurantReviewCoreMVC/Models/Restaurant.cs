@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
+using RestaurantReviewCoreMVC.ThirdPartyApi;
 
 namespace RestaurantReviewCoreMVC.Models
 {
@@ -26,6 +27,14 @@ namespace RestaurantReviewCoreMVC.Models
         private List<GalleryPhoto> galleryPhotoList = new List<GalleryPhoto>();
         private List<Review> reviewList = new List<Review>();
 
+        private Coordinate coordinate = new Coordinate();
+
+        public void FindCoordinate()
+        {
+            string fullAddress = street + ", " + city + ", " + state;
+            NominatimApi api = new NominatimApi();
+            coordinate = api.GetCoordinate(fullAddress);
+        }
         public int RestaurantID
         {
             get { return restaurantID; }
@@ -96,5 +105,11 @@ namespace RestaurantReviewCoreMVC.Models
         public string Owner { get => owner; set => owner = value; }
         public List<GalleryPhoto> GalleryPhotoList { get => galleryPhotoList; set => galleryPhotoList = value; }
         public List<Review> ReviewList { get => reviewList; set => reviewList = value; }
+
+        public Coordinate Coordinate
+        {
+            get { return coordinate; }
+            set { coordinate = value; }
+        }
     }
 }

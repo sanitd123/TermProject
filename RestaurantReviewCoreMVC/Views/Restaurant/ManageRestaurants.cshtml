@@ -17,54 +17,16 @@
 
 <html>
 <head>
-
-
-
-
-
-
-
 </head>
 <body>
     <h1>@ViewData["Title"]</h1>
 
     @{
         string accType = Context.Session.GetString("AccountType");
-        
-        if (accType != null && accType.Equals("Representative"))
-        {
-                    <div class="dashboard-container">
-
-                        <a asp-controller="Restaurant" asp-action="ManageRestaurants" class="btn btn-secondary">Manage Restaurants</a>
-                        <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-                    </div>
-        }
-        else if (accType != null && accType.Equals("Reviewer"))
-        {
-                    <div class="dashboard-container">
-
-                        <a asp-action="" class="btn btn-secondary">Manage Reviews</a>
-                        <a asp-controller="Account" asp-action="Logout" class="btn btn-secondary">Logout</a>
-
-
-                    </div>
-        }
-        else
-        {
-                    <div class="dashboard-container">
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Login</a>
-
-                    </div>
-        }
-    }
-    
-
-
-    <br />
-    <br />
-    
-
+     }
+     <div>
+         lat: @Model[0].Coordinate.lat | lon: @Model[0].Coordinate.lon
+     </div>
     <div class="row">
         @if (Model.Any())
         {
@@ -79,7 +41,7 @@
                             <p class="card-text">Average Rating: @restaurant.AvgScore</p>
                             <a asp-controller="Restaurant" asp-action="ViewRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">View Details</a>
                             <a asp-controller="Restaurant" asp-action="GetEditRestaurant" asp-route-id="@restaurant.RestaurantID" class="btn btn-primary">Edit Restaurant</a>
-                            <a asp-controller="Restaurant" asp-action="Reservation" asp-route-id="" class="btn btn-primary">View Reservations</a>
+                            <a asp-controller="Restaurant" asp-action="ManageReservations" asp-route-restaurantID="@restaurant.RestaurantID" class="btn btn-primary">Manage Reservations</a>
                             <form method="post" asp-controller="Restaurant" asp-action="DeleteRestaurant" asp-route-id="@restaurant.RestaurantID" class="d-inline">
                                 
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this restaurant?');">Delete Restaurant</button>

@@ -1,17 +1,17 @@
 ﻿@{
     
 }
-@model RestaurantReviewCoreMVC.Models.Review
+@model Review
 
 <form method="post" class="container">
     <h2 class="text-center mb-4 fw-bold">
         @if (Model.ReviewID == -1)
         {
-            @:Write a New Review
+            @:Write a New Review for @(Model.RestaurantName)
         }
         else
         {
-            @:Update Your Review
+            @:Update Your Review for @(Model.RestaurantName)
         }
     </h2>
 
@@ -121,9 +121,14 @@
 
     <button class="btn btn-primary" type="submit">Submit</button>
 
-    <div>
-        ReviewID: @Model.ReviewID | AccountID: @Model.AccountID | RestaurantID: @Model.RestaurantID
-    </div>
+    @if (Model.ReviewID > 0)
+    {
+        <a class="btn btn-outline-primary" asp-controller="Restaurant" asp-action="ManageReviews">Go Back</a>
+    }
+    else
+    {
+        <a class="btn btn-outline-primary" asp-controller="Restaurant" asp-action="ViewRestaurant" asp-route-id="@Model.RestaurantID">Go Back</a>
+    }
 
     <input asp-for="ReviewID" type="hidden" />
     <input asp-for="AccountID" type="hidden" />
