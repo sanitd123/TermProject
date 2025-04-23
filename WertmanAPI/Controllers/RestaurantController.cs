@@ -26,8 +26,7 @@ namespace WertmanAPI.Controllers
 
 
                 objCommand.CommandType = CommandType.StoredProcedure;
-                objCommand.CommandText = "TP_GetAllRestaurants";
-                DataSet myDataSet = objDB.GetDataSetUsingCmdObj(objCommand);
+                
 
                 objCommand.CommandText = "TP_AddRestaurant";
                 objCommand.Parameters.AddWithValue("@cuisine", restaurant.Cuisine);
@@ -64,7 +63,7 @@ namespace WertmanAPI.Controllers
         }
 
 
-        [HttpPut("UpdateRestaurant/{restaurant.RestaurantID}")]
+        [HttpPut("UpdateRestaurant")]
         public Boolean UpdateRestaurant([FromBody] Restaurant restaurant)
         {
             try

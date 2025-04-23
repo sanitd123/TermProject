@@ -579,10 +579,53 @@ namespace RestaurantReviewCoreMVC.Controllers
             return View("ModifyRestaurant", restaurant);
         }
 
-        [HttpPut]
-        public IActionResult EditRestaurant(int id)
+        [HttpPost]
+        public IActionResult EditRestaurant(Restaurant restaurant)
         {
-            return RedirectToAction("ManageRestaurants");
+            try
+            {
+                if (restaurant != null)
+                {
+                    Console.WriteLine("Rest not null");
+                    string json = JsonSerializer.Serialize(restaurant);
+                    WebRequest request = WebRequest.Create("https://localhost:7163/api/Restaurant/UpdateRestaurant");
+
+                    request.Method = "PUT";
+                    request.ContentType = "application/json";
+                    request.ContentLength = json.Length;
+
+                    StreamWriter writer = new StreamWriter(request.GetRequestStream());
+                    writer.Write(json);
+                    writer.Flush();
+                    writer.Close();
+
+                    WebResponse response = request.GetResponse();
+                    Stream theDataStream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(theDataStream);
+                    String data = reader.ReadToEnd();
+
+
+                    if (data == "true")
+                    {
+
+                        //success
+                    }
+                    else if (data == "false")
+                    {
+                        //error
+                    }
+                }
+                else
+                {
+                    //no restaurant
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateRestaurant (View): {ex.Message}\n{ex.StackTrace}");
+            }
+
+            return View();
         }
 
         

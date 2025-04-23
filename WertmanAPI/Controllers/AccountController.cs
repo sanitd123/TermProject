@@ -100,8 +100,7 @@ namespace WertmanAPI.Controllers
 
 
                 objCommand.CommandType= CommandType.StoredProcedure;
-                objCommand.CommandText = "TP_GetAllAccounts";
-                DataSet myDataSet = objDB.GetDataSetUsingCmdObj(objCommand);
+                
                 
                 objCommand.CommandText = "TP_AddAccount";
                 objCommand.Parameters.AddWithValue("@accountOwner", account.Name);
