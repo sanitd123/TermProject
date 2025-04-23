@@ -23,7 +23,7 @@ namespace RestaurantReviewCoreMVC.Controllers
             HttpContext.Session.SetString("AccountType", "Representative");
             int restaurantID = 4;
             TempData["RestaurantID"] = restaurantID;
-            return RedirectToAction("ManageRestaurants");
+            return RedirectToAction("ViewRestaurant", new {restaurantID});
 
 
             //HttpContext.Session.SetInt32("AccountID", 2);
@@ -270,15 +270,10 @@ namespace RestaurantReviewCoreMVC.Controllers
         [HttpGet("Restaurant/ViewRestaurant/{restaurantID:int}")]
         public IActionResult ViewRestaurant(int restaurantID)
         {
-
-
             Console.WriteLine(restaurantID.ToString());
             string url = "https://localhost:7163/api/Restaurant/ViewRestaurant/" + restaurantID;
             WebRequest getRequest = WebRequest.Create(url);
             getRequest.Method = "GET";
-
-
-
 
             WebResponse response = getRequest.GetResponse();
 
@@ -288,6 +283,7 @@ namespace RestaurantReviewCoreMVC.Controllers
             string data = reader.ReadToEnd();
             Console.WriteLine(data);
             Restaurant restaurant = JsonSerializer.Deserialize<Restaurant>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            restaurant.FindCoordinate();
 
             return View("ViewRestaurant", restaurant);
 

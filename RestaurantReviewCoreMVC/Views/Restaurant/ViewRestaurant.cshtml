@@ -95,3 +95,22 @@
     </form>
     <a class="btn btn-primary" asp-action="SearchRestaurant" asp-controller="Restaurant">Back to Search</a>
 </div>
+
+<div id="map" style="height: 400px"></div>
+
+@*
+    script uses leaflet.js library to render a map, openstreetmap api is called to give data to leaflet
+    reference: https://leafletjs.com/
+*@
+<script>
+    var lat = @Model.Coordinate.lat.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var lon = @Model.Coordinate.lon.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    var map = L.map('map').setView([lat, lon], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map); // No popup
+</script>
