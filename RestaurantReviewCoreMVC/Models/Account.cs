@@ -7,6 +7,10 @@
         private string email;
         private string password;
         private string accountType;
+        private string answerOne;
+        private string answerTwo;
+        private string answerThree;
+
 
         public int AccountID
         {
@@ -33,5 +37,9 @@
             get { return accountType; }
             set { accountType = value; }
         }
+
+        public string AnswerOne { get => answerOne; set => answerOne = value; }
+        public string AnswerTwo { get => answerTwo; set => answerTwo = value; }
+        public string AnswerThree { get => answerThree; set => answerThree = value; }
     }
 }

@@ -1,0 +1,158 @@
+﻿@model List<RestaurantReviewCoreMVC.Models.Reservation>
+
+<h2 class="mb-4">Manage Your Reservations</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="mb-5">
+        <h4>Pending Reservations</h4>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (Reservation reservation in Model)
+            {
+                if (reservation.Status.Equals("PENDING"))
+                {
+                    <div class="col">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">@reservation.Name</h5>
+                                <h6 class="card-subtitle text-muted mb-3">
+                                    Reservation for @reservation.PartySize on @reservation.ReservationTime.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </h6>
+
+                                <ul class="list-group list-group-flush mb-3">
+                                    <li class="list-group-item"><strong>Phone:</strong> @reservation.Phone</li>
+                                    <li class="list-group-item"><strong>Email:</strong> @reservation.Email</li>
+                                    <li class="list-group-item"><strong>Status:</strong> @reservation.Status</li>
+                                    @if (!string.IsNullOrEmpty(reservation.Comment))
+                                    {
+                                        <li class="list-group-item"><strong>Comment:</strong> @reservation.Comment</li>
+                                    }
+                                </ul>
+
+                                <div class="d-flex justify-content-end gap-2">
+                                    <form method="post" asp-controller="Restaurant" asp-action="AcceptReservation">
+                                        <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                        <input type="hidden" name="restaurantID" value="@reservation.RestaurantID" />
+                                        <button type="submit" class="btn btn-outline-success">Accept</button>
+                                    </form>
+                                    <form method="get" asp-controller="Restaurant" asp-action="Reservation">
+                                        <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                        <button type="submit" class="btn btn-outline-secondary">Update</button>
+                                    </form>
+                                    <form method="post" asp-controller="Restaurant" asp-action="DeclineReservation" onsubmit="return confirm('Are you sure you want to decline this reservation?');">
+                                        <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                        <input type="hidden" name="restaurantID" value="@reservation.RestaurantID" />
+                                        <button type="submit" class="btn btn-outline-danger">Decline</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h4>Handled Reservations</h4>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (Reservation reservation in Model)
+            {
+                if (!reservation.Status.Equals("PENDING") && reservation.ReservationTime > DateTime.Now)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">@reservation.Name</h5>
+                                <h6 class="card-subtitle text-muted mb-3">
+                                    Reservation for @reservation.PartySize on @reservation.ReservationTime.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </h6>
+
+                                <ul class="list-group list-group-flush mb-3">
+                                    <li class="list-group-item"><strong>Phone:</strong> @reservation.Phone</li>
+                                    <li class="list-group-item"><strong>Email:</strong> @reservation.Email</li>
+                                    <li class="list-group-item"><strong>Status:</strong> @reservation.Status</li>
+                                    @if (!string.IsNullOrEmpty(reservation.Comment))
+                                    {
+                                        <li class="list-group-item"><strong>Comment:</strong> @reservation.Comment</li>
+                                    }
+                                </ul>
+
+                                <div class="d-flex justify-content-end gap-2">
+                                    @if (!reservation.Status.Equals("Accepted"))
+                                    {
+                                        <form method="post" asp-controller="Restaurant" asp-action="AcceptReservation">
+                                            <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                            <input type="hidden" name="restaurantID" value="@reservation.RestaurantID" />
+                                            <button type="submit" class="btn btn-outline-success">Accept</button>
+                                        </form>
+                                    }
+
+                                    <form method="get" asp-controller="Restaurant" asp-action="Reservation">
+                                        <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                        <button type="submit" class="btn btn-outline-secondary">Update</button>
+                                    </form>
+
+                                    @if (!reservation.Status.Equals("Declined"))
+                                    {
+                                        <form method="post" asp-controller="Restaurant" asp-action="DeclineReservation" onsubmit="return confirm('Are you sure you want to decline this reservation?');">
+                                            <input type="hidden" name="reservationID" value="@reservation.ReservationID" />
+                                            <input type="hidden" name="restaurantID" value="@reservation.RestaurantID" />
+                                            <button type="submit" class="btn btn-outline-danger">Cancel</button>
+                                        </form>
+                                    }
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h4>Past Reservations</h4>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (Reservation reservation in Model)
+            {
+                if (reservation.ReservationTime < DateTime.Now)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">@reservation.Name</h5>
+                                <h6 class="card-subtitle text-muted mb-3">
+                                    Reservation for @reservation.PartySize on @reservation.ReservationTime.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </h6>
+
+                                <ul class="list-group list-group-flush mb-3">
+                                    <li class="list-group-item"><strong>Phone:</strong> @reservation.Phone</li>
+                                    <li class="list-group-item"><strong>Email:</strong> @reservation.Email</li>
+                                    <li class="list-group-item"><strong>Status:</strong> @reservation.Status</li>
+                                    @if (!string.IsNullOrEmpty(reservation.Comment))
+                                    {
+                                        <li class="list-group-item"><strong>Comment:</strong> @reservation.Comment</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        You do not have any reservations
+    </div>
+}
+
+<div>
+    <a class="btn btn-outline-primary" asp-controller="Restaurant" asp-action="ManageRestaurants">Go Back</a>
+</div>
+
+

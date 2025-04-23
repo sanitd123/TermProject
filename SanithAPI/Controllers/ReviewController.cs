@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SanithAPI.Models;
+using RestaurantReviewCoreMVC.Models;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace SanithAPI.Controllers
 {
@@ -9,6 +9,7 @@ namespace SanithAPI.Controllers
     [Route("api/[controller]")]
     public class ReviewController : Controller
     {
+        private DBConnect db = new DBConnect();
         public IActionResult Index()
         {
             return View();
@@ -26,7 +27,6 @@ namespace SanithAPI.Controllers
 
             objCommand.Parameters.AddWithValue("@restaurantID", id);
 
-            DBConnect db = new DBConnect();
             DataSet myData = db.GetDataSetUsingCmdObj(objCommand);
             DataTable dt = myData.Tables[0];
 
@@ -46,6 +46,7 @@ namespace SanithAPI.Controllers
                 review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
                 review.Price = int.Parse(row["PRICE"].ToString());
                 review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
+                review.RestaurantName = GetRestaurantNameByID(review.RestaurantID);
 
                 reviewList.Add(review);
             }
@@ -65,7 +66,6 @@ namespace SanithAPI.Controllers
 
             objCommand.Parameters.AddWithValue("@accountID", id); // or profileID
 
-            DBConnect db = new DBConnect();
             DataSet myData = db.GetDataSetUsingCmdObj(objCommand);
             DataTable dt = myData.Tables[0];
 
@@ -85,6 +85,7 @@ namespace SanithAPI.Controllers
                 review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
                 review.Price = int.Parse(row["PRICE"].ToString());
                 review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
+                review.RestaurantName = GetRestaurantNameByID(review.RestaurantID);
 
                 reviewList.Add(review);
             }
@@ -104,7 +105,6 @@ namespace SanithAPI.Controllers
 
             objCommand.Parameters.AddWithValue("@reviewID", id);
 
-            DBConnect db = new DBConnect();
             DataSet myData = db.GetDataSetUsingCmdObj(objCommand);
             DataRow row = myData.Tables[0].Rows[0];
 
@@ -119,6 +119,7 @@ namespace SanithAPI.Controllers
             review.Atmosphere = int.Parse(row["ATMOSPHERE"].ToString());
             review.Price = int.Parse(row["PRICE"].ToString());
             review.VisitTime = DateTime.Parse(row["VISIT_TIME"].ToString());
+            review.RestaurantName = GetRestaurantNameByID(review.RestaurantID);
 
             return review;
         }
@@ -143,8 +144,9 @@ namespace SanithAPI.Controllers
             objCommand.Parameters.AddWithValue("@price", review.Price);
             objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
 
-            DBConnect db = new DBConnect();
             db.DoUpdateUsingCmdObj(objCommand);
+
+            UpdateAverageRating(review.RestaurantID);
         }
 
         // PUT: api/Review/UpdateReview - Update review with reviewID
@@ -166,8 +168,9 @@ namespace SanithAPI.Controllers
             objCommand.Parameters.AddWithValue("@price", review.Price);
             objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
 
-            DBConnect db = new DBConnect();
             db.DoUpdateUsingCmdObj(objCommand);
+
+            UpdateAverageRating(review.RestaurantID);
         }
 
         // DELETE: api/Review/DeleteReview/{id} - Delete review with reviewID
@@ -182,8 +185,73 @@ namespace SanithAPI.Controllers
 
             objCommand.Parameters.AddWithValue("@reviewID", id);
 
-            DBConnect db = new DBConnect();
             db.DoUpdateUsingCmdObj(objCommand);
+
+            int restaurantID = GetRestaurantIDByReviewID(id);
+            UpdateAverageRating(restaurantID);
+        }
+
+        private void UpdateAverageRating(int restaurantID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_UpdateAverageRating"
+            };
+
+            objCommand.Parameters.AddWithValue("@restaurantID", restaurantID);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+
+        private int GetRestaurantIDByReviewID(int reviewID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetRestaurantIDByReviewID"
+            };
+
+            objCommand.Parameters.AddWithValue("@reviewID", reviewID);
+
+            SqlParameter restaurantIDParam = new SqlParameter
+            {
+                ParameterName = "@restaurantID",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(restaurantIDParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+
+            int restaurantID = Convert.ToInt32(objCommand.Parameters["@restaurantID"].Value);
+            return restaurantID;
+        }
+        private string GetRestaurantNameByID(int restaurantID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetRestaurantNameByID"
+            };
+
+            objCommand.Parameters.AddWithValue("@restaurantID", restaurantID);
+
+            SqlParameter restaurantNameParam = new SqlParameter
+            {
+                ParameterName = "@restaurantName",
+                SqlDbType = SqlDbType.NVarChar,
+                Size = 100,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(restaurantNameParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+
+            string restaurantName = objCommand.Parameters["@restaurantName"].Value.ToString();
+            return restaurantName;
         }
     }
 }

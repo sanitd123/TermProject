@@ -15,7 +15,7 @@ namespace RestaurantReviewCoreMVC.Models
         private int partySize = -1;
         private string comment = "";
         private string status = "";
-
+        private string restaurantName = "";
         public int ReservationID
         {
             get { return reservationID; }
@@ -64,6 +64,11 @@ namespace RestaurantReviewCoreMVC.Models
         {
             get { return status; }
             set { status = value; }
+        }
+        public string RestaurantName
+        {
+            get { return restaurantName; }
+            set { restaurantName = value; }
         }
     }
 }

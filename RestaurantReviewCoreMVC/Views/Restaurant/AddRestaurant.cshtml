@@ -1,5 +1,61 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model RestaurantReviewCoreMVC.Models.Restaurant
+
+
+<h1>Add Restaurant</h1>
+<style>
+    .dashboard-container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+</style>
+
+<form asp-controller="Restaurant" asp-action="AddRestaurant" method="post">
+    <div>
+        
+        Title:
+        <input asp-for="Title" />
+        <br />
+        Description:
+        <textarea asp-for="Description"></textarea>
+        <br />
+        
+        Cuisine:
+        <input asp-for="Cuisine" />
+        <br />
+        Street:
+        <input asp-for="Street" />
+        <br />
+        City:
+        <input asp-for="City" />
+        <br />
+        State:
+        <input asp-for="State" />
+        <br />
+        Zipcode:
+        <input asp-for="Zipcode" />
+        <br />
+        Phone:
+        <input asp-for="Phone" />
+        <br />
+        Email:
+        <input asp-for="Email" />
+        <br />
+        Website:
+        <input asp-for="Website" />
+        <br />
+        Hours:
+        <input asp-for="Hours" />
+        <br />
+        Owner:
+        <input asp-for="Owner" />
+        
+        <br />
+        <button type="submit">Add Restaurant</button>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

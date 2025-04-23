@@ -6,75 +6,39 @@ namespace RestaurantReviewCoreMVC.Models
     public class RestaurantDB
     {
         private DBConnect db = new DBConnect();
-        public Review GetReview(int? reviewID)
+
+        public List<Reservation> GetAllReservationsByRestaurant(int restaurantID)
         {
-            SqlCommand objCommand = new SqlCommand
-            {
-                CommandType = CommandType.StoredProcedure,
-                CommandText = "TP_GetReview"
+            SqlCommand objCommand = new SqlCommand 
+            { 
+                CommandType = CommandType.StoredProcedure, 
+                CommandText = "TP_GetAllReservationsByRestaurant" 
             };
 
-            objCommand.Parameters.AddWithValue("@reviewID", reviewID);
+            objCommand.Parameters.AddWithValue("@restaurantID", restaurantID);
 
             DataSet myData = db.GetDataSetUsingCmdObj(objCommand);
+            DataTable dt = myData.Tables[0];
 
-            if (myData.Tables[0].Rows.Count == 0)
+            List<Reservation> reservationList = new List<Reservation>();
+            for (int i = 0; i < dt.Rows.Count; i++)
             {
-                return null;
+                Reservation reservation = new Reservation();
+                reservation.ReservationID = int.Parse(dt.Rows[i]["RESERVATION_ID"].ToString());
+                reservation.RestaurantID = int.Parse(dt.Rows[i]["RESTAURANT_ID"].ToString());
+                reservation.Name = dt.Rows[i]["NAME"].ToString();
+                reservation.Phone = dt.Rows[i]["PHONE"].ToString();
+                reservation.Email = dt.Rows[i]["EMAIL"].ToString();
+                reservation.ReservationTime = DateTime.Parse(dt.Rows[i]["RESERVATION_TIME"].ToString());
+                reservation.PartySize = int.Parse(dt.Rows[i]["PARTY_SIZE"].ToString());
+                reservation.Comment = dt.Rows[i]["COMMENT"].ToString();
+                reservation.Status = dt.Rows[i]["STATUS"].ToString();
+                reservation.RestaurantName = GetRestaurantNameByID(reservation.RestaurantID);
+
+                reservationList.Add(reservation);
             }
 
-            Review review = new Review();
-            review.ReviewID = int.Parse(myData.Tables[0].Rows[0]["REVIEW_ID"].ToString());
-            review.AccountID = int.Parse(myData.Tables[0].Rows[0]["ACCOUNT_ID"].ToString());
-            review.RestaurantID = int.Parse(myData.Tables[0].Rows[0]["RESTAURANT_ID"].ToString());
-            review.Name = myData.Tables[0].Rows[0]["NAME"].ToString();
-            review.Comment = myData.Tables[0].Rows[0]["COMMENT"].ToString();
-            review.Quality = int.Parse(myData.Tables[0].Rows[0]["QUALITY"].ToString());
-            review.Service = int.Parse(myData.Tables[0].Rows[0]["SERVICE"].ToString());
-            review.Atmosphere = int.Parse(myData.Tables[0].Rows[0]["ATMOSPHERE"].ToString());
-            review.Price = int.Parse(myData.Tables[0].Rows[0]["PRICE"].ToString());
-            review.VisitTime = DateTime.Parse(myData.Tables[0].Rows[0]["VISIT_TIME"].ToString());
-
-            return review;
-        }
-        public void InsertReview(Review review)
-        {
-            SqlCommand objCommand = new SqlCommand
-            {
-                CommandType = CommandType.StoredProcedure,
-                CommandText = "TP_InsertReview"
-            };
-
-            objCommand.Parameters.AddWithValue("@accountID", review.AccountID);
-            objCommand.Parameters.AddWithValue("@restaurantID", review.RestaurantID);
-            objCommand.Parameters.AddWithValue("@name", review.Name);
-            objCommand.Parameters.AddWithValue("@comment", review.Comment);
-            objCommand.Parameters.AddWithValue("@quality", review.Quality);
-            objCommand.Parameters.AddWithValue("@service", review.Service);
-            objCommand.Parameters.AddWithValue("@atmosphere", review.Atmosphere);
-            objCommand.Parameters.AddWithValue("@price", review.Price);
-            objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
-
-            db.DoUpdateUsingCmdObj(objCommand);
-        }
-        public void UpdateReview(Review review)
-        {
-            SqlCommand objCommand = new SqlCommand
-            {
-                CommandType = CommandType.StoredProcedure,
-                CommandText = "TP_UpdateReview"
-            };
-
-            objCommand.Parameters.AddWithValue("@reviewID", review.ReviewID);
-            objCommand.Parameters.AddWithValue("@name", review.Name);
-            objCommand.Parameters.AddWithValue("@comment", review.Comment);
-            objCommand.Parameters.AddWithValue("@quality", review.Quality);
-            objCommand.Parameters.AddWithValue("@service", review.Service);
-            objCommand.Parameters.AddWithValue("@atmosphere", review.Atmosphere);
-            objCommand.Parameters.AddWithValue("@price", review.Price);
-            objCommand.Parameters.AddWithValue("@visitTime", review.VisitTime);
-
-            db.DoUpdateUsingCmdObj(objCommand);
+            return reservationList;
         }
         public Reservation GetReservation(int? reservationID)
         {
@@ -87,17 +51,19 @@ namespace RestaurantReviewCoreMVC.Models
             objCommand.Parameters.AddWithValue("@reservationID", reservationID);
 
             DataSet myData = db.GetDataSetUsingCmdObj(objCommand);
+            DataRow row = myData.Tables[0].Rows[0];
 
             Reservation reservation = new Reservation();
-            reservation.ReservationID = int.Parse(myData.Tables[0].Rows[0]["RESERVATION_ID"].ToString());
-            reservation.RestaurantID = int.Parse(myData.Tables[0].Rows[0]["RESTAURANT_ID"].ToString());
-            reservation.Name = myData.Tables[0].Rows[0]["NAME"].ToString();
-            reservation.Phone = myData.Tables[0].Rows[0]["PHONE"].ToString();
-            reservation.Email = myData.Tables[0].Rows[0]["EMAIL"].ToString();
-            reservation.ReservationTime = DateTime.Parse(myData.Tables[0].Rows[0]["RESERVATION_TIME"].ToString());
-            reservation.PartySize = int.Parse(myData.Tables[0].Rows[0]["PARTY_SIZE"].ToString());
-            reservation.Comment = myData.Tables[0].Rows[0]["COMMENT"].ToString();
-            reservation.Status = myData.Tables[0].Rows[0]["STATUS"].ToString();
+            reservation.ReservationID = int.Parse(row["RESERVATION_ID"].ToString());
+            reservation.RestaurantID = int.Parse(row["RESTAURANT_ID"].ToString());
+            reservation.Name = row["NAME"].ToString();
+            reservation.Phone = row["PHONE"].ToString();
+            reservation.Email = row["EMAIL"].ToString();
+            reservation.ReservationTime = DateTime.Parse(row["RESERVATION_TIME"].ToString());
+            reservation.PartySize = int.Parse(row["PARTY_SIZE"].ToString());
+            reservation.Comment = row["COMMENT"].ToString();
+            reservation.Status = row["STATUS"].ToString();
+            reservation.RestaurantName = GetRestaurantNameByID(reservation.RestaurantID);
 
             return reservation;
         }
@@ -109,13 +75,21 @@ namespace RestaurantReviewCoreMVC.Models
                 CommandText = "TP_InsertReservation"
             };
 
+
             objCommand.Parameters.AddWithValue("@restaurantID", reservation.RestaurantID);
             objCommand.Parameters.AddWithValue("@name", reservation.Name);
             objCommand.Parameters.AddWithValue("@phone", reservation.Phone);
             objCommand.Parameters.AddWithValue("@email", reservation.Email);
             objCommand.Parameters.AddWithValue("@reservationTime", reservation.ReservationTime);
             objCommand.Parameters.AddWithValue("@partySize", reservation.PartySize);
-            objCommand.Parameters.AddWithValue("@comment", reservation.Comment);
+
+            string comment = reservation.Comment;
+            if (comment.Equals(string.Empty))
+            {
+                comment = "NONE";
+            }
+
+            objCommand.Parameters.AddWithValue("@comment", comment);
 
             db.DoUpdateUsingCmdObj(objCommand);
         }
@@ -134,8 +108,145 @@ namespace RestaurantReviewCoreMVC.Models
             objCommand.Parameters.AddWithValue("@email", reservation.Email);
             objCommand.Parameters.AddWithValue("@reservationTime", reservation.ReservationTime);
             objCommand.Parameters.AddWithValue("@partySize", reservation.PartySize);
-            objCommand.Parameters.AddWithValue("@comment", reservation.Comment);
-            objCommand.Parameters.AddWithValue("@status", reservation.Status);
+            objCommand.Parameters.AddWithValue("@status", "Modified");
+
+            string comment = reservation.Comment;
+            if (comment.Equals(string.Empty))
+            {
+                comment = "NONE";
+            }
+
+            objCommand.Parameters.AddWithValue("@comment", comment);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+        public void AcceptReservation(int reservationID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_AcceptReservation"
+            };
+
+            objCommand.Parameters.AddWithValue("@reservationID", reservationID);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+        public void DeclineReservation(int reservationID) // update
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_DeclineReservation"
+            };
+
+            objCommand.Parameters.AddWithValue("@reservationID", reservationID);
+
+            db.DoUpdateUsingCmdObj(objCommand);
+        }
+        public string GetRestaurantNameByID(int restaurantID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetRestaurantNameByID"
+            };
+
+            objCommand.Parameters.AddWithValue("@restaurantID", restaurantID);
+
+            SqlParameter restaurantNameParam = new SqlParameter
+            {
+                ParameterName = "@restaurantName",
+                SqlDbType = SqlDbType.NVarChar,
+                Size = 100,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(restaurantNameParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+
+            string restaurantName = objCommand.Parameters["@restaurantName"].Value.ToString();
+            return restaurantName;
+        }
+        public string GetEmailByAccount(int accountID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetEmailByAccount"
+            };
+
+            objCommand.Parameters.AddWithValue("@accountID", accountID);
+
+            SqlParameter emailParam = new SqlParameter
+            {
+                ParameterName = "@email",
+                SqlDbType = SqlDbType.NVarChar,
+                Size = 100,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(emailParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+            string email = objCommand.Parameters["@email"].Value.ToString();
+            return email;
+        }
+        public int GetAccountIDByRestaurant(int restaurantID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetAccountIDByRestaurant"
+            };
+
+            objCommand.Parameters.AddWithValue("@restaurantID", restaurantID);
+
+            SqlParameter accountIDParam = new SqlParameter
+            {
+                ParameterName = "@accountID",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(accountIDParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+            int accountID = Convert.ToInt32(objCommand.Parameters["@accountID"].Value);
+            return accountID;
+        }
+        public string GetEmailByReservation(int reservationID)
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_GetEmailByReservation"
+            };
+
+            objCommand.Parameters.AddWithValue("@reservationID", reservationID);
+
+            SqlParameter emailParam = new SqlParameter
+            {
+                ParameterName = "@email",
+                SqlDbType = SqlDbType.NVarChar,
+                Size = 100,
+                Direction = ParameterDirection.Output
+            };
+
+            objCommand.Parameters.Add(emailParam);
+
+            db.GetDataSetUsingCmdObj(objCommand);
+            string email = objCommand.Parameters["@email"].Value.ToString();
+            return email;
+        }
+        public void UpdateExpiredReservations()
+        {
+            SqlCommand objCommand = new SqlCommand
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandText = "TP_UpdateExpiredReservations"
+            };
 
             db.DoUpdateUsingCmdObj(objCommand);
         }

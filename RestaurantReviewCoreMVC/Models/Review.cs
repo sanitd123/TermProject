@@ -14,6 +14,7 @@ namespace RestaurantReviewCoreMVC.Models
         private int atmosphere = -1;
         private int price = -1;
         private DateTime visitTime = default;
+        private string restaurantName = "";
 
         public int ReviewID
         {
@@ -70,6 +71,11 @@ namespace RestaurantReviewCoreMVC.Models
         {
             get { return visitTime; }
             set { visitTime = value; }
+        }
+        public string RestaurantName
+        {
+            get { return restaurantName; }
+            set { restaurantName = value; }
         }
     }
 }
